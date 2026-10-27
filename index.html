@@ -1,19 +1,777 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sistem Pelayanan Administrasi Desa Jatimulyo</title>
-    <meta property="og:image" content="https://bolt.new/static/og_default.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pelayanan Administrasi Desa Jatimulyo</title>
+  <meta name="description" content="Pendaftaran online pelayanan administrasi Desa Jatimulyo, Lampung. Daftar dari rumah, verifikasi berkas fisik di Balai Desa." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .tab-panel { animation: fadeIn .25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .chevron { transform: rotate(180deg); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- ===================== HEADER / NAVBAR ===================== -->
+  <header class="bg-gradient-to-r from-blue-800 to-blue-600 text-white shadow-lg sticky top-0 z-30">
+    <div class="max-w-4xl mx-auto px-4 pt-4">
+      <div class="flex items-center gap-3">
+        <div class="shrink-0 w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center ring-1 ring-white/30">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6M9 11h.01M15 11h.01" />
+          </svg>
+        </div>
+        <div class="leading-tight">
+          <p class="text-xs text-blue-100 tracking-wide uppercase">Pemerintah Desa Jatimulyo</p>
+          <h1 class="text-base sm:text-lg font-bold">Pelayanan Administrasi Desa Jatimulyo</h1>
+        </div>
+      </div>
+
+      <nav class="mt-4 flex gap-1 overflow-x-auto no-scrollbar" role="tablist" aria-label="Navigasi utama">
+        <button type="button" role="tab" data-tab="daftar"
+          class="tab-btn whitespace-nowrap px-4 py-2.5 text-sm font-semibold rounded-t-lg transition">Pendaftaran</button>
+        <button type="button" role="tab" data-tab="status"
+          class="tab-btn whitespace-nowrap px-4 py-2.5 text-sm font-semibold rounded-t-lg transition">Cek Status</button>
+        <button type="button" role="tab" data-tab="info"
+          class="tab-btn whitespace-nowrap px-4 py-2.5 text-sm font-semibold rounded-t-lg transition">Informasi Syarat Berkas</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================== KONTEN ===================== -->
+  <main class="flex-1 w-full max-w-4xl mx-auto px-4 py-6 sm:py-8">
+
+    <!-- ========== TAB 1: PENDAFTARAN ========== -->
+    <section id="panel-daftar" class="tab-panel" role="tabpanel">
+      <div class="mb-5">
+        <h2 class="text-2xl font-bold text-blue-900">Formulir Pendaftaran Layanan</h2>
+        <p class="text-slate-600 mt-1">Daftar dari rumah, lalu datang ke Balai Desa membawa berkas fisik sesuai jadwal pilihan Anda.</p>
+      </div>
+
+      <div class="mb-6 flex gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0 mt-0.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0-1.1.9-2 2-2V7a4 4 0 10-8 0v2c1.1 0 2 .9 2 2m-4 0h12v9H6v-9z" />
+        </svg>
+        <p><strong>Data Anda aman.</strong> Anda <u>tidak perlu</u> mengunggah foto atau scan KTP/KK ke website ini. Cukup bawa berkas fisik saat datang ke Balai Desa.</p>
+      </div>
+
+      <form id="form-daftar" novalidate class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-5 sm:p-7 space-y-5">
+
+        <div>
+          <label for="nama" class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+          <input id="nama" name="nama" type="text" maxlength="100" autocomplete="name" placeholder="Sesuai KTP"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
+          <p class="err text-xs text-red-600 mt-1 hidden" data-for="nama"></p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label for="noWa" class="block text-sm font-semibold text-slate-700 mb-1">Nomor WhatsApp <span class="text-red-500">*</span></label>
+            <input id="noWa" name="noWa" type="tel" inputmode="tel" maxlength="16" autocomplete="tel" placeholder="08xxxxxxxxxx"
+              class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
+            <p class="err text-xs text-red-600 mt-1 hidden" data-for="noWa"></p>
+          </div>
+          <div>
+            <label for="dusun" class="block text-sm font-semibold text-slate-700 mb-1">Dusun / RT <span class="text-red-500">*</span></label>
+            <select id="dusun" name="dusun"
+              class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
+              <option value="">-- Pilih Dusun --</option>
+              <option>Dusun 1</option>
+              <option>Dusun 2</option>
+              <option>Dusun 3</option>
+              <option>Dusun 4</option>
+              <option>Dusun 5</option>
+            </select>
+            <p class="err text-xs text-red-600 mt-1 hidden" data-for="dusun"></p>
+          </div>
+        </div>
+
+        <div>
+          <label for="jenisLayanan" class="block text-sm font-semibold text-slate-700 mb-1">Jenis Layanan <span class="text-red-500">*</span></label>
+          <select id="jenisLayanan" name="jenisLayanan"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
+            <option value="">-- Pilih Jenis Layanan --</option>
+          </select>
+          <p class="err text-xs text-red-600 mt-1 hidden" data-for="jenisLayanan"></p>
+        </div>
+
+        <!-- DYNAMIC CHECKLIST -->
+        <div id="checklist-box" class="hidden rounded-xl border-2 border-dashed border-amber-300 bg-amber-50 p-4 sm:p-5" aria-live="polite">
+          <div class="flex items-start gap-2 mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <p class="font-bold text-amber-900">Berkas FISIK yang wajib dibawa ke Balai Desa</p>
+              <p id="checklist-layanan" class="text-sm text-amber-800"></p>
+            </div>
+          </div>
+          <ul id="checklist-items" class="space-y-2"></ul>
+          <p id="checklist-catatan" class="text-xs text-amber-800 mt-3 hidden"></p>
+        </div>
+
+        <div>
+          <label for="tanggalDatang" class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Rencana Kedatangan ke Balai Desa <span class="text-red-500">*</span></label>
+          <input id="tanggalDatang" name="tanggalDatang" type="date"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
+          <p id="hint-tanggal" class="text-xs text-slate-500 mt-1"></p>
+          <p class="err text-xs text-red-600 mt-1 hidden" data-for="tanggalDatang"></p>
+        </div>
+
+        <div id="form-alert" class="hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert"></div>
+
+        <button id="btn-submit" type="submit"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-700 hover:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold px-6 py-3 shadow transition">
+          <svg id="spin-submit" class="hidden animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+          <span id="label-submit">Kirim Pendaftaran</span>
+        </button>
+      </form>
+    </section>
+
+    <!-- ========== TAB 2: CEK STATUS ========== -->
+    <section id="panel-status" class="tab-panel hidden" role="tabpanel">
+      <div class="mb-5">
+        <h2 class="text-2xl font-bold text-blue-900">Cek Status Pendaftaran</h2>
+        <p class="text-slate-600 mt-1">Masukkan kode tracking yang Anda terima saat mendaftar.</p>
+      </div>
+
+      <form id="form-status" novalidate class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-5 sm:p-7">
+        <label for="trackingCode" class="block text-sm font-semibold text-slate-700 mb-1">Kode Tracking</label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input id="trackingCode" type="text" maxlength="30" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Contoh: JTM-20261017-K7M2"
+            class="flex-1 rounded-lg border border-slate-300 px-3.5 py-2.5 font-mono tracking-wide uppercase focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" />
+          <button id="btn-status" type="submit"
+            class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-700 hover:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold px-6 py-2.5 shadow transition">
+            <svg id="spin-status" class="hidden animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            <span id="label-status">Cek Status</span>
+          </button>
+        </div>
+        <p id="status-error" class="hidden mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert"></p>
+      </form>
+
+      <!-- KARTU HASIL -->
+      <div id="status-result" class="hidden mt-6 bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden" aria-live="polite">
+        <div class="bg-blue-50 px-5 sm:px-7 py-4 flex flex-wrap items-center justify-between gap-3 border-b border-blue-100">
+          <div>
+            <p class="text-xs uppercase tracking-wide text-blue-700 font-semibold">Kode Tracking</p>
+            <p id="res-kode" class="font-mono font-bold text-blue-900 text-lg"></p>
+          </div>
+          <span id="res-badge" class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold"></span>
+        </div>
+
+        <dl class="px-5 sm:px-7 py-5 grid sm:grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <dt class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Nama</dt>
+            <dd id="res-nama" class="mt-0.5 font-semibold text-slate-800"></dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Jenis Layanan</dt>
+            <dd id="res-layanan" class="mt-0.5 font-semibold text-slate-800"></dd>
+          </div>
+          <div>
+            <dt class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Tanggal Kedatangan</dt>
+            <dd id="res-tanggal" class="mt-0.5 font-semibold text-slate-800"></dd>
+          </div>
+          <div class="sm:col-span-2">
+            <dt class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Catatan Petugas</dt>
+            <dd id="res-catatan" class="mt-0.5 text-slate-700"></dd>
+          </div>
+        </dl>
+
+        <div class="px-5 sm:px-7 pb-6">
+          <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-3">Progres</p>
+          <ol id="res-steps" class="grid grid-cols-4 gap-2 text-center"></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TAB 3: INFORMASI SYARAT ========== -->
+    <section id="panel-info" class="tab-panel hidden" role="tabpanel">
+      <div class="mb-5">
+        <h2 class="text-2xl font-bold text-blue-900">Informasi Syarat Berkas</h2>
+        <p class="text-slate-600 mt-1">Daftar berkas fisik untuk setiap layanan. Bawa <strong>berkas asli</strong> dan <strong>fotokopinya</strong> saat datang ke Balai Desa.</p>
+      </div>
+      <div id="accordion" class="space-y-3"></div>
+      <p class="mt-5 text-xs text-slate-500">Persyaratan dapat disesuaikan dengan ketentuan terbaru Pemerintah Desa Jatimulyo. Jika ragu, tanyakan kepada petugas Balai Desa.</p>
+    </section>
+  </main>
+
+  <footer class="bg-blue-900 text-blue-100 text-sm">
+    <div class="max-w-4xl mx-auto px-4 py-5 text-center">
+      <p class="font-semibold">Pemerintah Desa Jatimulyo, Provinsi Lampung</p>
+      <p class="text-blue-200 text-xs mt-1">Sistem pendaftaran hybrid: daftar online, verifikasi berkas fisik di Balai Desa.</p>
+    </div>
+  </footer>
+
+  <!-- ===================== MODAL SUKSES ===================== -->
+  <div id="modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-900/60" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="bg-white w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl">
+      <div class="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-6 py-5 rounded-t-2xl text-center">
+        <div class="mx-auto w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 id="modal-title" class="text-xl font-bold">Pendaftaran Berhasil!</h3>
+        <p class="text-green-50 text-sm">Simpan kode tracking di bawah ini.</p>
+      </div>
+
+      <div class="px-6 py-5 space-y-5">
+        <div class="rounded-xl bg-slate-50 ring-1 ring-slate-200 p-4 text-center">
+          <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Kode Tracking Anda</p>
+          <p id="modal-kode" class="mt-1 font-mono text-2xl sm:text-3xl font-extrabold text-blue-800 tracking-wider break-all"></p>
+          <button id="btn-copy" type="button" class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-900">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span id="copy-label">Salin Kode</span>
+          </button>
+        </div>
+
+        <div class="text-sm text-slate-700 space-y-1">
+          <p><span class="text-slate-500">Layanan:</span> <strong id="modal-layanan"></strong></p>
+          <p><span class="text-slate-500">Jadwal datang:</span> <strong id="modal-tanggal"></strong></p>
+        </div>
+
+        <div>
+          <p class="font-bold text-blue-900 mb-2">Langkah berikutnya</p>
+          <ol class="space-y-2 text-sm text-slate-700 list-decimal list-inside marker:font-bold marker:text-blue-700">
+            <li><strong>Catat atau salin</strong> kode tracking di atas (bisa difoto layar).</li>
+            <li><strong>Siapkan berkas fisik</strong> (asli + fotokopi) sesuai daftar di bawah.</li>
+            <li><strong>Datang ke Balai Desa</strong> pada tanggal yang dipilih dan sebutkan kode tracking kepada petugas.</li>
+            <li><strong>Pantau status</strong> kapan saja melalui menu Cek Status.</li>
+          </ol>
+        </div>
+
+        <div class="rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <p class="font-semibold text-amber-900 text-sm mb-2">Berkas yang harus dibawa:</p>
+          <ul id="modal-berkas" class="list-disc list-inside text-sm text-amber-900 space-y-1"></ul>
+        </div>
+      </div>
+
+      <div class="px-6 pb-6 flex flex-col sm:flex-row gap-3">
+        <button id="btn-modal-cek" type="button" class="flex-1 rounded-lg bg-blue-700 hover:bg-blue-800 text-white font-semibold px-4 py-2.5 transition">Cek Status Sekarang</button>
+        <button id="btn-modal-tutup" type="button" class="flex-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 transition">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =====================================================
+     *  KONFIGURASI
+     * ===================================================== */
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhpnJGXnmT6RnfgghNaY310fDS5lfxAIZ-YnsIkPpph2e_m_9itLQ4IAYPk03B6yceAA/exec";
+
+    // Hari tanpa pelayanan (0 = Minggu, 6 = Sabtu). Sesuaikan dengan jam kerja Balai Desa.
+    const HARI_TANPA_PELAYANAN = [0, 6];
+    const REQUEST_TIMEOUT_MS = 25000;
+
+    /* =====================================================
+     *  DATA LAYANAN & SYARAT BERKAS
+     *  (dipakai oleh checklist dinamis, modal, dan tab informasi)
+     * ===================================================== */
+    const LAYANAN = [
+      {
+        nama: "Surat Keterangan Usaha (SKU)",
+        deskripsi: "Untuk bukti bahwa warga memiliki usaha di wilayah desa (pengajuan pinjaman, izin, dsb).",
+        syarat: [
+          "Fotokopi KTP pemilik usaha",
+          "Fotokopi Kartu Keluarga (KK)",
+          "Surat Pengantar dari RT/RW setempat",
+          "Keterangan usaha: nama usaha, jenis usaha, dan alamat tempat usaha",
+          "Pas foto 3x4 (jika diminta petugas)"
+        ],
+        catatan: "Petugas dapat menanyakan lama usaha berjalan saat verifikasi."
+      },
+      {
+        nama: "Surat Keterangan Tidak Mampu (SKTM)",
+        deskripsi: "Untuk keperluan bantuan pendidikan, kesehatan, atau bantuan sosial lainnya.",
+        syarat: [
+          "Fotokopi KTP pemohon",
+          "Fotokopi Kartu Keluarga (KK)",
+          "Surat Pengantar dari RT/RW setempat",
+          "Keterangan tujuan penggunaan surat (sekolah/kesehatan/lainnya)",
+          "Dokumen pendukung tujuan, misalnya surat dari sekolah/fasilitas kesehatan (jika ada)"
+        ],
+        catatan: "Petugas dapat melakukan verifikasi kondisi ekonomi secara langsung."
+      },
+      {
+        nama: "Surat Keterangan Domisili",
+        deskripsi: "Untuk bukti tempat tinggal warga di wilayah Desa Jatimulyo.",
+        syarat: [
+          "Fotokopi KTP pemohon",
+          "Fotokopi Kartu Keluarga (KK)",
+          "Surat Pengantar dari RT/RW setempat",
+          "Surat pindah atau keterangan tinggal (khusus pendatang/belum berdomisili sesuai KTP)",
+          "Keterangan tujuan penggunaan surat"
+        ],
+        catatan: ""
+      },
+      {
+        nama: "Surat Keterangan Beda Nama",
+        deskripsi: "Untuk menyatakan bahwa dua penulisan nama pada dokumen berbeda merujuk pada orang yang sama.",
+        syarat: [
+          "Fotokopi KTP pemohon",
+          "Fotokopi Kartu Keluarga (KK)",
+          "Surat Pengantar dari RT/RW setempat",
+          "Dokumen-dokumen yang penulisan namanya berbeda (misalnya ijazah, akta kelahiran, buku nikah, BPJS, atau rekening), asli dan fotokopi",
+          "Keterangan dokumen mana yang namanya perlu disamakan"
+        ],
+        catatan: "Bawa semua dokumen yang berbeda penulisan namanya agar petugas dapat mencocokkan."
+      },
+      {
+        nama: "Surat Pengantar SKCK",
+        deskripsi: "Surat pengantar dari desa sebagai syarat pengurusan SKCK di kepolisian.",
+        syarat: [
+          "Fotokopi KTP pemohon",
+          "Fotokopi Kartu Keluarga (KK)",
+          "Surat Pengantar dari RT/RW setempat",
+          "Fotokopi akta kelahiran atau ijazah terakhir",
+          "Pas foto terbaru (ukuran sesuai ketentuan petugas)"
+        ],
+        catatan: "Syarat di kepolisian dapat berbeda; tanyakan petugas desa dan kepolisian setempat."
+      }
+    ];
+
+    /* =====================================================
+     *  UTIL
+     * ===================================================== */
+    const $ = (id) => document.getElementById(id);
+    const BULAN = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+    const HARI = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function parseYmd(ymd) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || ""));
+      if (!m) return null;
+      return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    }
+
+    function formatTanggalIndo(ymd) {
+      const d = parseYmd(ymd);
+      if (!d) return ymd || "-";
+      return `${HARI[d.getDay()]}, ${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function todayYmd() {
+      const d = new Date();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${d.getFullYear()}-${mm}-${dd}`;
+    }
+
+    function findLayanan(nama) {
+      return LAYANAN.find((l) => l.nama === nama);
+    }
+
+    /* =====================================================
+     *  API (Google Apps Script)
+     *  Content-Type text/plain => "simple request" sehingga
+     *  tidak memicu preflight CORS yang tidak didukung Apps Script.
+     * ===================================================== */
+    async function callApi(payload) {
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.indexOf("GANTI_DENGAN") === 0) {
+        throw new Error("URL Google Apps Script belum diatur. Isi konstanta GOOGLE_SCRIPT_URL di bagian atas script.");
+      }
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+          redirect: "follow",
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error("Server mengembalikan kesalahan (" + response.status + ").");
+        }
+
+        let data;
+        try {
+          data = await response.json();
+        } catch (e) {
+          throw new Error("Respons server tidak valid. Pastikan Web App di-deploy dengan akses \"Anyone\".");
+        }
+        return data;
+      } catch (err) {
+        if (err.name === "AbortError") {
+          throw new Error("Koneksi terlalu lama. Periksa internet Anda lalu coba lagi.");
+        }
+        if (err instanceof TypeError) {
+          throw new Error("Tidak dapat terhubung ke server. Periksa internet Anda atau URL Apps Script.");
+        }
+        throw err;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    /* =====================================================
+     *  TAB NAVIGATION
+     * ===================================================== */
+    const TABS = ["daftar", "status", "info"];
+
+    function showTab(name) {
+      TABS.forEach((t) => {
+        const panel = $("panel-" + t);
+        const btn = document.querySelector(`.tab-btn[data-tab="${t}"]`);
+        const active = t === name;
+        panel.classList.toggle("hidden", !active);
+        btn.setAttribute("aria-selected", active ? "true" : "false");
+        btn.className =
+          "tab-btn whitespace-nowrap px-4 py-2.5 text-sm font-semibold rounded-t-lg transition " +
+          (active ? "bg-slate-50 text-blue-800" : "text-blue-100 hover:bg-white/10 hover:text-white");
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => showTab(btn.dataset.tab));
+    });
+
+    /* =====================================================
+     *  INISIALISASI DROPDOWN, ACCORDION
+     * ===================================================== */
+    function initLayananDropdown() {
+      const select = $("jenisLayanan");
+      LAYANAN.forEach((l) => {
+        const opt = document.createElement("option");
+        opt.value = l.nama;
+        opt.textContent = l.nama;
+        select.appendChild(opt);
+      });
+    }
+
+    function initAccordion() {
+      const wrap = $("accordion");
+      wrap.innerHTML = LAYANAN.map((l, i) => `
+        <details class="group bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden" ${i === 0 ? "open" : ""}>
+          <summary class="cursor-pointer select-none flex items-center justify-between gap-3 px-5 py-4 hover:bg-slate-50">
+            <div>
+              <p class="font-bold text-blue-900">${escapeHtml(l.nama)}</p>
+              <p class="text-sm text-slate-500 mt-0.5">${escapeHtml(l.deskripsi)}</p>
+            </div>
+            <svg class="chevron w-5 h-5 shrink-0 text-blue-700 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-5 pt-1 border-t border-slate-100">
+            <p class="text-sm font-semibold text-slate-700 mt-3 mb-2">Berkas fisik yang dibawa:</p>
+            <ul class="space-y-2">
+              ${l.syarat.map((s) => `
+                <li class="flex gap-2 text-sm text-slate-700">
+                  <svg class="w-5 h-5 shrink-0 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  <span>${escapeHtml(s)}</span>
+                </li>`).join("")}
+            </ul>
+            ${l.catatan ? `<p class="mt-3 text-xs rounded-lg bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2">Catatan: ${escapeHtml(l.catatan)}</p>` : ""}
+          </div>
+        </details>
+      `).join("");
+    }
+
+    /* =====================================================
+     *  CHECKLIST DINAMIS
+     * ===================================================== */
+    function renderChecklist() {
+      const layanan = findLayanan($("jenisLayanan").value);
+      const box = $("checklist-box");
+
+      if (!layanan) {
+        box.classList.add("hidden");
+        return;
+      }
+
+      $("checklist-layanan").textContent = layanan.nama + " (bawa berkas asli dan fotokopinya)";
+      $("checklist-items").innerHTML = layanan.syarat.map((s, i) => `
+        <li>
+          <label class="flex items-start gap-3 cursor-pointer text-sm text-amber-950">
+            <input type="checkbox" class="mt-0.5 w-4 h-4 rounded border-amber-400 text-blue-700 focus:ring-blue-300" id="chk-${i}" />
+            <span>${escapeHtml(s)}</span>
+          </label>
+        </li>`).join("");
+
+      const cat = $("checklist-catatan");
+      if (layanan.catatan) {
+        cat.textContent = "Catatan: " + layanan.catatan;
+        cat.classList.remove("hidden");
+      } else {
+        cat.classList.add("hidden");
+      }
+
+      box.classList.remove("hidden");
+    }
+
+    /* =====================================================
+     *  VALIDASI FORM
+     * ===================================================== */
+    function setError(field, message) {
+      const el = document.querySelector(`.err[data-for="${field}"]`);
+      const input = $(field);
+      if (message) {
+        el.textContent = message;
+        el.classList.remove("hidden");
+        input.classList.add("border-red-400");
+      } else {
+        el.textContent = "";
+        el.classList.add("hidden");
+        input.classList.remove("border-red-400");
+      }
+    }
+
+    function normalizePhone(raw) {
+      let s = String(raw || "").trim().replace(/[\s\-().]/g, "");
+      return s;
+    }
+
+    function validateForm() {
+      let valid = true;
+      const nama = $("nama").value.trim();
+      const wa = normalizePhone($("noWa").value);
+      const dusun = $("dusun").value;
+      const layanan = $("jenisLayanan").value;
+      const tanggal = $("tanggalDatang").value;
+
+      if (nama.length < 3) { setError("nama", "Nama lengkap minimal 3 karakter."); valid = false; } else setError("nama", "");
+
+      if (!/^(\+62|62|0)8[1-9][0-9]{6,11}$/.test(wa)) {
+        setError("noWa", "Masukkan nomor WhatsApp yang valid, contoh 081234567890."); valid = false;
+      } else setError("noWa", "");
+
+      if (!dusun) { setError("dusun", "Pilih dusun tempat tinggal Anda."); valid = false; } else setError("dusun", "");
+      if (!layanan) { setError("jenisLayanan", "Pilih jenis layanan."); valid = false; } else setError("jenisLayanan", "");
+
+      if (!tanggal) {
+        setError("tanggalDatang", "Pilih tanggal kedatangan."); valid = false;
+      } else if (tanggal < todayYmd()) {
+        setError("tanggalDatang", "Tanggal tidak boleh sebelum hari ini."); valid = false;
+      } else if (HARI_TANPA_PELAYANAN.includes(parseYmd(tanggal).getDay())) {
+        setError("tanggalDatang", "Balai Desa tidak melayani pada hari " + HARI[parseYmd(tanggal).getDay()] + ". Pilih hari lain."); valid = false;
+      } else setError("tanggalDatang", "");
+
+      return valid;
+    }
+
+    function showFormAlert(msg) {
+      const el = $("form-alert");
+      if (msg) { el.textContent = msg; el.classList.remove("hidden"); }
+      else { el.textContent = ""; el.classList.add("hidden"); }
+    }
+
+    function setLoading(btnId, spinId, labelId, loading, textLoading, textIdle) {
+      $(btnId).disabled = loading;
+      $(spinId).classList.toggle("hidden", !loading);
+      $(labelId).textContent = loading ? textLoading : textIdle;
+    }
+
+    /* =====================================================
+     *  SUBMIT PENDAFTARAN
+     * ===================================================== */
+    let lastRegistration = null;
+
+    $("form-daftar").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      showFormAlert("");
+      if (!validateForm()) return;
+
+      const payload = {
+        action: "register",
+        nama: $("nama").value.trim(),
+        noWa: normalizePhone($("noWa").value),
+        dusun: $("dusun").value,
+        jenisLayanan: $("jenisLayanan").value,
+        tanggalDatang: $("tanggalDatang").value
+      };
+
+      setLoading("btn-submit", "spin-submit", "label-submit", true, "Mengirim...", "Kirim Pendaftaran");
+
+      try {
+        const result = await callApi(payload);
+        if (!result || !result.success || !result.trackingCode) {
+          throw new Error((result && result.message) || "Pendaftaran gagal. Silakan coba lagi.");
+        }
+        lastRegistration = { kode: result.trackingCode, layanan: payload.jenisLayanan, tanggal: payload.tanggalDatang };
+        openModal(lastRegistration);
+        $("form-daftar").reset();
+        $("checklist-box").classList.add("hidden");
+      } catch (err) {
+        showFormAlert(err.message);
+      } finally {
+        setLoading("btn-submit", "spin-submit", "label-submit", false, "Mengirim...", "Kirim Pendaftaran");
+      }
+    });
+
+    $("jenisLayanan").addEventListener("change", renderChecklist);
+
+    /* =====================================================
+     *  MODAL
+     * ===================================================== */
+    function openModal(reg) {
+      $("modal-kode").textContent = reg.kode;
+      $("modal-layanan").textContent = reg.layanan;
+      $("modal-tanggal").textContent = formatTanggalIndo(reg.tanggal);
+
+      const layanan = findLayanan(reg.layanan);
+      $("modal-berkas").innerHTML = layanan
+        ? layanan.syarat.map((s) => `<li>${escapeHtml(s)}</li>`).join("")
+        : "";
+
+      $("copy-label").textContent = "Salin Kode";
+      $("modal").classList.remove("hidden");
+      $("modal").classList.add("flex");
+      document.body.classList.add("overflow-hidden");
+    }
+
+    function closeModal() {
+      $("modal").classList.add("hidden");
+      $("modal").classList.remove("flex");
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    $("btn-modal-tutup").addEventListener("click", closeModal);
+    $("modal").addEventListener("click", (e) => { if (e.target === $("modal")) closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("modal").classList.contains("hidden")) closeModal(); });
+
+    $("btn-modal-cek").addEventListener("click", () => {
+      const kode = lastRegistration ? lastRegistration.kode : "";
+      closeModal();
+      showTab("status");
+      $("trackingCode").value = kode;
+      $("trackingCode").focus();
+    });
+
+    $("btn-copy").addEventListener("click", async () => {
+      const kode = $("modal-kode").textContent;
+      try {
+        await navigator.clipboard.writeText(kode);
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = kode;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (_) {}
+        document.body.removeChild(ta);
+      }
+      $("copy-label").textContent = "Tersalin!";
+      setTimeout(() => { $("copy-label").textContent = "Salin Kode"; }, 2000);
+    });
+
+    /* =====================================================
+     *  CEK STATUS
+     * ===================================================== */
+    const STATUS_STYLE = {
+      "pending":      { cls: "bg-yellow-100 text-yellow-800 ring-1 ring-yellow-300", dot: "bg-yellow-500", label: "Pending", step: 0 },
+      "diproses":     { cls: "bg-blue-100 text-blue-800 ring-1 ring-blue-300",       dot: "bg-blue-500",   label: "Diproses", step: 1 },
+      "siap diambil": { cls: "bg-green-100 text-green-800 ring-1 ring-green-300",    dot: "bg-green-500",  label: "Siap Diambil", step: 2 },
+      "selesai":      { cls: "bg-green-800 text-white ring-1 ring-green-900",        dot: "bg-white",      label: "Selesai", step: 3 }
+    };
+    const STEP_LABELS = ["Pending", "Diproses", "Siap Diambil", "Selesai"];
+
+    function getStatusStyle(status) {
+      const key = String(status || "").trim().toLowerCase();
+      return STATUS_STYLE[key] || { cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-300", dot: "bg-slate-400", label: status || "Tidak diketahui", step: -1 };
+    }
+
+    function renderSteps(activeStep) {
+      $("res-steps").innerHTML = STEP_LABELS.map((label, i) => {
+        const done = activeStep >= 0 && i <= activeStep;
+        return `
+          <li class="flex flex-col items-center gap-1.5">
+            <span class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${done ? "bg-blue-700 text-white" : "bg-slate-200 text-slate-500"}">${done ? "&#10003;" : i + 1}</span>
+            <span class="text-[11px] sm:text-xs leading-tight ${done ? "text-blue-800 font-semibold" : "text-slate-500"}">${escapeHtml(label)}</span>
+          </li>`;
+      }).join("");
+    }
+
+    function showStatusError(msg) {
+      const el = $("status-error");
+      if (msg) { el.textContent = msg; el.classList.remove("hidden"); }
+      else { el.textContent = ""; el.classList.add("hidden"); }
+    }
+
+    $("trackingCode").addEventListener("input", (e) => {
+      e.target.value = e.target.value.toUpperCase().replace(/\s+/g, "");
+    });
+
+    $("form-status").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      showStatusError("");
+      $("status-result").classList.add("hidden");
+
+      const kode = $("trackingCode").value.trim().toUpperCase();
+      if (!kode) { showStatusError("Masukkan kode tracking terlebih dahulu."); return; }
+      if (!/^JTM-\d{8}-[A-Z0-9]{3,6}$/.test(kode)) {
+        showStatusError("Format kode tidak sesuai. Contoh yang benar: JTM-20261017-K7M2.");
+        return;
+      }
+
+      setLoading("btn-status", "spin-status", "label-status", true, "Memeriksa...", "Cek Status");
+
+      try {
+        const data = await callApi({ action: "checkStatus", trackingCode: kode });
+        if (!data || !data.success) {
+          throw new Error((data && data.message) || "Data tidak ditemukan.");
+        }
+
+        const style = getStatusStyle(data.statusPelayanan);
+
+        $("res-kode").textContent = kode;
+        $("res-nama").textContent = data.nama || "-";
+        $("res-layanan").textContent = data.jenisLayanan || "-";
+        $("res-tanggal").textContent = formatTanggalIndo(data.tanggalDatang);
+        $("res-catatan").textContent = data.catatan && data.catatan.trim() ? data.catatan : "Belum ada catatan dari petugas.";
+
+        const badge = $("res-badge");
+        badge.className = "inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold " + style.cls;
+        badge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full ${style.dot}"></span><span></span>`;
+        badge.lastElementChild.textContent = style.label;
+
+        renderSteps(style.step);
+        $("status-result").classList.remove("hidden");
+        $("status-result").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } catch (err) {
+        showStatusError(err.message);
+      } finally {
+        setLoading("btn-status", "spin-status", "label-status", false, "Memeriksa...", "Cek Status");
+      }
+    });
+
+    /* =====================================================
+     *  INIT
+     * ===================================================== */
+    (function init() {
+      initLayananDropdown();
+      initAccordion();
+
+      const tgl = $("tanggalDatang");
+      tgl.min = todayYmd();
+      const libur = HARI_TANPA_PELAYANAN.map((d) => HARI[d]).join(" & ");
+      $("hint-tanggal").textContent = libur ? "Hari tanpa pelayanan: " + libur + "." : "";
+
+      showTab("daftar");
+    })();
+  </script>
+</body>
 </html>

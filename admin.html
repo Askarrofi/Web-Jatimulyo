@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dashboard Operator - Pelayanan Desa Jatimulyo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .modal-anim { animation: pop .18s ease; }
+    @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+    #print-slip { display: none; }
+    @media print {
+      body > *:not(#print-slip) { display: none !important; }
+      #print-slip { display: block !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-indigo-500 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <div class="leading-tight">
+          <h1 class="text-base sm:text-lg font-bold">Dashboard Operator - Pelayanan Desa Jatimulyo</h1>
+          <p class="text-xs text-slate-400">Khusus petugas Balai Desa</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Indikator koneksi -->
+        <div class="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2 text-xs">
+          <span id="conn-dot" class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+          <span id="conn-text" class="text-slate-300">Belum terhubung</span>
+        </div>
+
+        <button id="btn-refresh" type="button"
+          class="inline-flex items-center gap-2 rounded-lg bg-slate-700 hover:bg-slate-600 disabled:opacity-60 px-3.5 py-2 text-sm font-semibold transition">
+          <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Muat Ulang Data (Refresh)
+        </button>
+
+        <button id="btn-walkin" type="button"
+          class="inline-flex items-center gap-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 px-3.5 py-2 text-sm font-semibold transition">
+          + Pendaftaran Offline (Walk-In)
+        </button>
+
+        <button id="btn-lock" type="button" title="Hapus kunci admin dari browser ini"
+          class="rounded-lg bg-slate-800 hover:bg-slate-700 px-3 py-2 text-sm text-slate-300 transition">Kunci</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- ===================== STATISTIK ===================== -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" aria-label="Ringkasan statistik">
+      <div class="bg-white rounded-xl p-4 shadow-sm ring-1 ring-slate-200 border-l-4 border-indigo-500">
+        <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Total Pendaftar</p>
+        <p id="stat-total" class="text-3xl font-extrabold text-slate-900 mt-1">-</p>
+        <p id="stat-total-sub" class="text-xs text-slate-500 mt-1">&nbsp;</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm ring-1 ring-slate-200 border-l-4 border-yellow-400">
+        <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Menunggu (Pending)</p>
+        <p id="stat-pending" class="text-3xl font-extrabold text-yellow-600 mt-1">-</p>
+        <p class="text-xs text-slate-500 mt-1">Belum diverifikasi</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm ring-1 ring-slate-200 border-l-4 border-blue-500">
+        <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Sedang Diproses</p>
+        <p id="stat-proses" class="text-3xl font-extrabold text-blue-600 mt-1">-</p>
+        <p class="text-xs text-slate-500 mt-1">Berkas diverifikasi</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm ring-1 ring-slate-200 border-l-4 border-green-600">
+        <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Selesai / Siap Diambil</p>
+        <p id="stat-selesai" class="text-3xl font-extrabold text-green-700 mt-1">-</p>
+        <p id="stat-selesai-sub" class="text-xs text-slate-500 mt-1">&nbsp;</p>
+      </div>
+    </section>
+
+    <!-- ===================== FILTER ===================== -->
+    <section class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200 p-4">
+      <div class="grid md:grid-cols-12 gap-3">
+        <div class="md:col-span-5">
+          <label for="f-search" class="block text-xs font-semibold text-slate-600 mb-1">Pencarian cepat</label>
+          <input id="f-search" type="search" placeholder="Cari nama, kode tracking, atau no. WA..." autocomplete="off"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none" />
+        </div>
+        <div class="md:col-span-2">
+          <label for="f-status" class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
+          <select id="f-status" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
+            <option value="">Semua</option>
+            <option>Pending</option>
+            <option>Diproses</option>
+            <option>Siap Diambil</option>
+            <option>Selesai</option>
+          </select>
+        </div>
+        <div class="md:col-span-2">
+          <label for="f-date" class="block text-xs font-semibold text-slate-600 mb-1">Tanggal kedatangan</label>
+          <select id="f-date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
+            <option value="all">Semua Tanggal</option>
+            <option value="today">Hari Ini</option>
+          </select>
+        </div>
+        <div class="md:col-span-3">
+          <label for="f-sort" class="block text-xs font-semibold text-slate-600 mb-1">Urutkan</label>
+          <select id="f-sort" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
+            <option value="newest">Pendaftar terbaru</option>
+            <option value="date-asc">Tanggal datang terdekat</option>
+            <option value="date-desc">Tanggal datang terjauh</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+        <p id="filter-info">-</p>
+        <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+          <input id="auto-refresh" type="checkbox" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-300" />
+          Muat ulang otomatis tiap 60 detik
+        </label>
+      </div>
+    </section>
+
+    <!-- ===================== TABEL ===================== -->
+    <section class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wide">
+            <tr>
+              <th class="px-4 py-3 text-left font-semibold whitespace-nowrap">Tanggal Datang</th>
+              <th class="px-4 py-3 text-left font-semibold whitespace-nowrap">Kode Tracking</th>
+              <th class="px-4 py-3 text-left font-semibold">Jalur</th>
+              <th class="px-4 py-3 text-left font-semibold">Nama Warga</th>
+              <th class="px-4 py-3 text-left font-semibold">No WA</th>
+              <th class="px-4 py-3 text-left font-semibold">Jenis Layanan</th>
+              <th class="px-4 py-3 text-left font-semibold">Status</th>
+              <th class="px-4 py-3 text-left font-semibold">Catatan</th>
+              <th class="px-4 py-3 text-right font-semibold">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+      <div id="table-empty" class="hidden py-14 text-center text-slate-500">
+        <p id="table-empty-text" class="font-semibold">Tidak ada data.</p>
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-slate-100 bg-slate-50">
+        <p id="pager-info" class="text-xs text-slate-500"></p>
+        <div class="flex items-center gap-2">
+          <button id="pg-prev" type="button" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed">&laquo; Sebelumnya</button>
+          <button id="pg-next" type="button" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed">Berikutnya &raquo;</button>
+        </div>
+      </div>
+    </section>
+
+    <p id="error-banner" class="hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert"></p>
+  </main>
+
+  <!-- ===================== MODAL KUNCI ADMIN ===================== -->
+  <div id="modal-key" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-900/70" role="dialog" aria-modal="true" aria-labelledby="key-title">
+    <form id="form-key" class="modal-anim bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6">
+      <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+        </svg>
+      </div>
+      <h2 id="key-title" class="text-lg font-bold text-slate-900">Kunci Admin</h2>
+      <p class="text-sm text-slate-600 mt-1">Masukkan kunci admin yang diatur pada <code class="bg-slate-100 px-1 rounded">ADMIN_KEY</code> di Google Apps Script. Kunci hanya disimpan sementara di tab browser ini.</p>
+      <input id="key-input" type="password" autocomplete="off" placeholder="Kunci admin"
+        class="mt-4 w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none" />
+      <p id="key-error" class="hidden mt-2 text-sm text-red-600" role="alert"></p>
+      <button type="submit" class="mt-4 w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 transition">Masuk</button>
+    </form>
+  </div>
+
+  <!-- ===================== MODAL KELOLA ===================== -->
+  <div id="modal-manage" class="hidden fixed inset-0 z-40 items-center justify-center p-4 bg-slate-900/60" role="dialog" aria-modal="true" aria-labelledby="manage-title">
+    <div class="modal-anim bg-white w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl">
+      <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-slate-200 sticky top-0 bg-white rounded-t-2xl">
+        <div>
+          <h2 id="manage-title" class="text-lg font-bold text-slate-900">Kelola / Verifikasi Pendaftaran</h2>
+          <p id="m-kode" class="font-mono text-sm text-indigo-700 font-semibold"></p>
+        </div>
+        <button id="m-close" type="button" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Tutup">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+
+      <div class="px-6 py-5 space-y-5">
+        <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+          <div><dt class="text-xs uppercase text-slate-500 font-semibold">Nama</dt><dd id="m-nama" class="font-semibold text-slate-900"></dd></div>
+          <div>
+            <dt class="text-xs uppercase text-slate-500 font-semibold">No. WhatsApp</dt>
+            <dd class="flex items-center gap-2 flex-wrap">
+              <span id="m-wa" class="font-semibold text-slate-900"></span>
+              <a id="m-wa-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-xs font-semibold text-green-700 bg-green-100 hover:bg-green-200 rounded px-2 py-0.5">Buka WhatsApp</a>
+            </dd>
+          </div>
+          <div><dt class="text-xs uppercase text-slate-500 font-semibold">Dusun</dt><dd id="m-dusun" class="font-semibold text-slate-900"></dd></div>
+          <div><dt class="text-xs uppercase text-slate-500 font-semibold">Jalur</dt><dd id="m-jalur"></dd></div>
+          <div class="sm:col-span-2"><dt class="text-xs uppercase text-slate-500 font-semibold">Jenis Layanan</dt><dd id="m-layanan" class="font-semibold text-slate-900"></dd></div>
+          <div><dt class="text-xs uppercase text-slate-500 font-semibold">Tanggal Rencana Datang</dt><dd id="m-tanggal" class="font-semibold text-slate-900"></dd></div>
+          <div><dt class="text-xs uppercase text-slate-500 font-semibold">Waktu Mendaftar</dt><dd id="m-timestamp" class="text-slate-700"></dd></div>
+        </dl>
+
+        <div class="rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <p class="text-sm font-bold text-amber-900 mb-2">Berkas fisik yang wajib dibawa warga (centang saat diperiksa)</p>
+          <ul id="m-berkas" class="space-y-1.5"></ul>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label for="m-status" class="block text-sm font-semibold text-slate-700 mb-1">Ubah Status</label>
+            <select id="m-status" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
+              <option>Pending</option>
+              <option>Diproses</option>
+              <option>Siap Diambil</option>
+              <option>Selesai</option>
+            </select>
+            <p class="text-xs text-slate-500 mt-1">Alur: Pending &rarr; Diproses &rarr; Siap Diambil &rarr; Selesai</p>
+          </div>
+          <div class="flex items-end">
+            <p id="m-current-badge" class="text-sm text-slate-600"></p>
+          </div>
+        </div>
+
+        <div>
+          <label for="m-catatan" class="block text-sm font-semibold text-slate-700 mb-1">Catatan Petugas</label>
+          <textarea id="m-catatan" rows="3" maxlength="500" placeholder="Contoh: Berkas lengkap"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"></textarea>
+          <div id="m-chips" class="flex flex-wrap gap-2 mt-2"></div>
+          <p class="text-xs text-slate-500 mt-1">Catatan ini dapat dilihat warga melalui menu Cek Status.</p>
+        </div>
+
+        <p id="m-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert"></p>
+      </div>
+
+      <div class="px-6 py-4 border-t border-slate-200 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 bg-slate-50 rounded-b-2xl">
+        <button id="m-cancel" type="button" class="rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold px-5 py-2.5 transition">Batal</button>
+        <button id="m-save" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 transition">
+          <svg id="m-spin" class="hidden animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+          <span id="m-save-label">Simpan Perubahan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL WALK-IN ===================== -->
+  <div id="modal-walkin" class="hidden fixed inset-0 z-40 items-center justify-center p-4 bg-slate-900/60" role="dialog" aria-modal="true" aria-labelledby="walkin-title">
+    <div class="modal-anim bg-white w-full max-w-xl max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl">
+
+      <!-- Tampilan form -->
+      <div id="walkin-form-view">
+        <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-slate-200 sticky top-0 bg-white rounded-t-2xl">
+          <div>
+            <h2 id="walkin-title" class="text-lg font-bold text-slate-900">Pendaftaran Offline (Walk-In)</h2>
+            <p class="text-xs text-slate-500">Untuk warga yang datang langsung ke Balai Desa tanpa mendaftar online.</p>
+          </div>
+          <button id="w-close" type="button" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label="Tutup">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+
+        <form id="form-walkin" novalidate class="px-6 py-5 space-y-4">
+          <div>
+            <label for="w-nama" class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+            <input id="w-nama" type="text" maxlength="100" placeholder="Sesuai KTP"
+              class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none" />
+            <p class="w-err text-xs text-red-600 mt-1 hidden" data-for="w-nama"></p>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label for="w-wa" class="block text-sm font-semibold text-slate-700 mb-1">No. WhatsApp <span class="text-slate-400 font-normal">(opsional)</span></label>
+              <input id="w-wa" type="tel" inputmode="tel" maxlength="16" placeholder="08xxxxxxxxxx"
+                class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none" />
+              <p class="w-err text-xs text-red-600 mt-1 hidden" data-for="w-wa"></p>
+            </div>
+            <div>
+              <label for="w-dusun" class="block text-sm font-semibold text-slate-700 mb-1">Dusun / RT <span class="text-red-500">*</span></label>
+              <select id="w-dusun" class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
+                <option value="">-- Pilih Dusun --</option>
+                <option>Dusun 1</option>
+                <option>Dusun 2</option>
+                <option>Dusun 3</option>
+                <option>Dusun 4</option>
+                <option>Dusun 5</option>
+              </select>
+              <p class="w-err text-xs text-red-600 mt-1 hidden" data-for="w-dusun"></p>
+            </div>
+          </div>
+
+          <div>
+            <label for="w-layanan" class="block text-sm font-semibold text-slate-700 mb-1">Jenis Layanan <span class="text-red-500">*</span></label>
+            <select id="w-layanan" class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none">
+              <option value="">-- Pilih Jenis Layanan --</option>
+            </select>
+            <p class="w-err text-xs text-red-600 mt-1 hidden" data-for="w-layanan"></p>
+          </div>
+
+          <div id="w-berkas-box" class="hidden rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <p class="text-sm font-bold text-amber-900 mb-2">Berkas fisik yang harus dibawa/diperiksa:</p>
+            <ul id="w-berkas" class="list-disc list-inside text-sm text-amber-900 space-y-1"></ul>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label for="w-tanggal" class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Datang <span class="text-red-500">*</span></label>
+              <input id="w-tanggal" type="date"
+                class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none" />
+              <p class="w-err text-xs text-red-600 mt-1 hidden" data-for="w-tanggal"></p>
+            </div>
+            <div>
+              <label for="w-catatan" class="block text-sm font-semibold text-slate-700 mb-1">Catatan <span class="text-slate-400 font-normal">(opsional)</span></label>
+              <input id="w-catatan" type="text" maxlength="300" placeholder="Misal: berkas sudah lengkap"
+                class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none" />
+            </div>
+          </div>
+
+          <p id="w-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert"></p>
+
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
+            <button id="w-cancel" type="button" class="rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold px-5 py-2.5 transition">Batal</button>
+            <button id="w-submit" type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 transition">
+              <svg id="w-spin" class="hidden animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+              <span id="w-submit-label">Daftarkan &amp; Buat Kode</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tampilan sukses -->
+      <div id="walkin-success-view" class="hidden">
+        <div class="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-6 py-5 rounded-t-2xl text-center">
+          <h2 class="text-xl font-bold">Pendaftaran Offline Berhasil</h2>
+          <p class="text-green-50 text-sm">Berikan kode ini kepada warga (tulis di kertas atau cetak slip).</p>
+        </div>
+        <div class="px-6 py-5 space-y-4">
+          <div class="rounded-xl bg-slate-50 ring-1 ring-slate-200 p-4 text-center">
+            <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Kode Tracking</p>
+            <p id="ws-kode" class="mt-1 font-mono text-3xl font-extrabold text-indigo-700 tracking-wider break-all"></p>
+          </div>
+          <div class="text-sm text-slate-700 space-y-1">
+            <p><span class="text-slate-500">Nama:</span> <strong id="ws-nama"></strong></p>
+            <p><span class="text-slate-500">Layanan:</span> <strong id="ws-layanan"></strong></p>
+            <p><span class="text-slate-500">Tanggal:</span> <strong id="ws-tanggal"></strong></p>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button id="ws-print" type="button" class="flex-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2.5 transition">Cetak Slip</button>
+            <button id="ws-another" type="button" class="flex-1 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold px-4 py-2.5 transition">Input Warga Lain</button>
+            <button id="ws-done" type="button" class="flex-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 transition">Selesai</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIP CETAK ===================== -->
+  <div id="print-slip" style="font-family: Arial, sans-serif; padding: 24px; max-width: 360px;">
+    <div style="text-align:center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px;">
+      <div style="font-size: 12px;">PEMERINTAH DESA JATIMULYO</div>
+      <div style="font-size: 16px; font-weight: bold;">BUKTI PENDAFTARAN LAYANAN</div>
+    </div>
+    <div style="text-align:center; margin: 12px 0;">
+      <div style="font-size: 12px;">Kode Tracking</div>
+      <div id="ps-kode" style="font-size: 26px; font-weight: bold; letter-spacing: 2px; font-family: monospace;"></div>
+    </div>
+    <table style="font-size: 13px; width: 100%;">
+      <tr><td style="width: 90px;">Nama</td><td>: <span id="ps-nama"></span></td></tr>
+      <tr><td>Layanan</td><td>: <span id="ps-layanan"></span></td></tr>
+      <tr><td>Tanggal</td><td>: <span id="ps-tanggal"></span></td></tr>
+    </table>
+    <p style="font-size: 11px; margin-top: 14px;">Simpan kode ini untuk memantau status layanan melalui website Pelayanan Desa Jatimulyo.</p>
+  </div>
+
+  <!-- ===================== TOAST ===================== -->
+  <div id="toast" class="hidden fixed bottom-5 right-5 z-[60] max-w-sm rounded-lg px-4 py-3 text-sm font-semibold text-white shadow-xl" role="status"></div>
+
+  <script>
+    /* =====================================================
+     *  KONFIGURASI
+     * ===================================================== */
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhpnJGXnmT6RnfgghNaY310fDS5lfxAIZ-YnsIkPpph2e_m_9itLQ4IAYPk03B6yceAA/exec";
+
+    const REQUEST_TIMEOUT_MS = 30000;
+    const AUTO_REFRESH_MS = 60000;
+    const PAGE_SIZE = 20;
+    const KEY_STORAGE = "jtm_admin_key";
+
+    const CATATAN_CEPAT = [
+      "Berkas lengkap",
+      "Kurang fotokopi KTP",
+      "Kurang fotokopi KK",
+      "Kurang surat pengantar RT",
+      "Menunggu tanda tangan Kades",
+      "Surat sudah ditandatangani Kades",
+      "Surat siap diambil di Balai Desa"
+    ];
+
+    /* Daftar syarat (sama dengan index.html warga) */
+    const LAYANAN = [
+      {
+        nama: "Surat Keterangan Usaha (SKU)",
+        syarat: ["Fotokopi KTP pemilik usaha", "Fotokopi Kartu Keluarga (KK)", "Surat Pengantar dari RT/RW setempat", "Keterangan usaha: nama usaha, jenis usaha, dan alamat tempat usaha", "Pas foto 3x4 (jika diminta petugas)"]
+      },
+      {
+        nama: "Surat Keterangan Tidak Mampu (SKTM)",
+        syarat: ["Fotokopi KTP pemohon", "Fotokopi Kartu Keluarga (KK)", "Surat Pengantar dari RT/RW setempat", "Keterangan tujuan penggunaan surat (sekolah/kesehatan/lainnya)", "Dokumen pendukung tujuan (jika ada)"]
+      },
+      {
+        nama: "Surat Keterangan Domisili",
+        syarat: ["Fotokopi KTP pemohon", "Fotokopi Kartu Keluarga (KK)", "Surat Pengantar dari RT/RW setempat", "Surat pindah atau keterangan tinggal (khusus pendatang)", "Keterangan tujuan penggunaan surat"]
+      },
+      {
+        nama: "Surat Keterangan Beda Nama",
+        syarat: ["Fotokopi KTP pemohon", "Fotokopi Kartu Keluarga (KK)", "Surat Pengantar dari RT/RW setempat", "Dokumen yang penulisan namanya berbeda (asli dan fotokopi)", "Keterangan dokumen mana yang namanya perlu disamakan"]
+      },
+      {
+        nama: "Surat Pengantar SKCK",
+        syarat: ["Fotokopi KTP pemohon", "Fotokopi Kartu Keluarga (KK)", "Surat Pengantar dari RT/RW setempat", "Fotokopi akta kelahiran atau ijazah terakhir", "Pas foto terbaru (ukuran sesuai ketentuan petugas)"]
+      }
+    ];
+
+    /* =====================================================
+     *  UTIL
+     * ===================================================== */
+    const $ = (id) => document.getElementById(id);
+    const BULAN = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+    const BULAN_PENDEK = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+    const HARI = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+
+    function escapeHtml(str) {
+      return String(str === null || str === undefined ? "" : str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function parseYmd(ymd) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || ""));
+      if (!m) return null;
+      return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    }
+
+    function formatTanggalPanjang(ymd) {
+      const d = parseYmd(ymd);
+      if (!d) return ymd || "-";
+      return `${HARI[d.getDay()]}, ${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function formatTanggalPendek(ymd) {
+      const d = parseYmd(ymd);
+      if (!d) return ymd || "-";
+      return `${d.getDate()} ${BULAN_PENDEK[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function todayYmd() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    }
+
+    function findLayanan(nama) {
+      return LAYANAN.find((l) => l.nama === nama);
+    }
+
+    function normalizePhone(raw) {
+      return String(raw || "").trim().replace(/[\s\-().]/g, "");
+    }
+
+    function waLink(noWa) {
+      let n = normalizePhone(noWa).replace(/^\+/, "");
+      if (!/^\d{9,15}$/.test(n)) return "";
+      if (n.startsWith("0")) n = "62" + n.slice(1);
+      return "https://wa.me/" + n;
+    }
+
+    let toastTimer = null;
+    function toast(message, type) {
+      const el = $("toast");
+      el.textContent = message;
+      el.className = "fixed bottom-5 right-5 z-[60] max-w-sm rounded-lg px-4 py-3 text-sm font-semibold text-white shadow-xl " +
+        (type === "error" ? "bg-red-600" : "bg-slate-900");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.add("hidden"), 3500);
+    }
+
+    function openModal(id) {
+      const el = $(id);
+      el.classList.remove("hidden");
+      el.classList.add("flex");
+    }
+    function closeModalById(id) {
+      const el = $(id);
+      el.classList.add("hidden");
+      el.classList.remove("flex");
+    }
+
+    /* =====================================================
+     *  STATUS STYLE
+     * ===================================================== */
+    const STATUS_STYLE = {
+      "pending":      { cls: "bg-yellow-100 text-yellow-800 ring-1 ring-yellow-300", label: "Pending" },
+      "diproses":     { cls: "bg-blue-100 text-blue-800 ring-1 ring-blue-300", label: "Diproses" },
+      "siap diambil": { cls: "bg-green-100 text-green-800 ring-1 ring-green-300", label: "Siap Diambil" },
+      "selesai":      { cls: "bg-green-800 text-white ring-1 ring-green-900", label: "Selesai" }
+    };
+
+    function statusBadgeHtml(status) {
+      const s = STATUS_STYLE[String(status || "").trim().toLowerCase()] ||
+        { cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-300", label: status || "-" };
+      return `<span class="inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-bold ${s.cls}">${escapeHtml(s.label)}</span>`;
+    }
+
+    function jalurBadgeHtml(jalur) {
+      const offline = String(jalur || "").toLowerCase() === "offline";
+      const cls = offline ? "bg-purple-100 text-purple-800 ring-1 ring-purple-300" : "bg-sky-100 text-sky-800 ring-1 ring-sky-300";
+      return `<span class="inline-block rounded-full px-2.5 py-0.5 text-xs font-bold ${cls}">${offline ? "Offline" : "Online"}</span>`;
+    }
+
+    /* =====================================================
+     *  KONEKSI & API
+     * ===================================================== */
+    function setConn(state, text) {
+      const dot = $("conn-dot");
+      const colors = { idle: "bg-slate-500", loading: "bg-amber-400 animate-pulse", ok: "bg-green-400", error: "bg-red-500" };
+      dot.className = "w-2.5 h-2.5 rounded-full " + (colors[state] || colors.idle);
+      $("conn-text").textContent = text;
+    }
+
+    function getKey() {
+      try { return sessionStorage.getItem(KEY_STORAGE) || ""; } catch (e) { return memoryKey; }
+    }
+    let memoryKey = "";
+    function setKey(k) {
+      memoryKey = k;
+      try { sessionStorage.setItem(KEY_STORAGE, k); } catch (e) {}
+    }
+    function clearKey() {
+      memoryKey = "";
+      try { sessionStorage.removeItem(KEY_STORAGE); } catch (e) {}
+    }
+
+    class ApiError extends Error {
+      constructor(message, code) { super(message); this.code = code || ""; }
+    }
+
+    async function callApi(payload) {
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.indexOf("GANTI_DENGAN") === 0) {
+        throw new ApiError("URL Google Apps Script belum diatur. Isi konstanta GOOGLE_SCRIPT_URL di bagian atas script.", "NO_URL");
+      }
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(Object.assign({}, payload, { adminKey: getKey() })),
+          redirect: "follow",
+          signal: controller.signal
+        });
+
+        if (!response.ok) throw new ApiError("Server mengembalikan kesalahan (" + response.status + ").");
+
+        let data;
+        try { data = await response.json(); }
+        catch (e) { throw new ApiError("Respons server tidak valid. Pastikan Web App di-deploy (versi terbaru) dengan akses \"Anyone\"."); }
+
+        if (data && data.success === false) {
+          throw new ApiError(data.message || "Permintaan ditolak.", data.code);
+        }
+        return data;
+      } catch (err) {
+        if (err instanceof ApiError) throw err;
+        if (err.name === "AbortError") throw new ApiError("Koneksi terlalu lama. Periksa internet lalu coba lagi.");
+        if (err instanceof TypeError) throw new ApiError("Tidak dapat terhubung ke server. Periksa internet atau URL Apps Script.");
+        throw err;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    /* =====================================================
+     *  STATE & PEMUATAN DATA
+     * ===================================================== */
+    let allData = [];
+    let filtered = [];
+    let page = 1;
+    let loading = false;
+    let selectedCode = null;
+    let saving = false;
+    let autoTimer = null;
+
+    function showBanner(msg) {
+      const el = $("error-banner");
+      if (msg) { el.textContent = msg; el.classList.remove("hidden"); }
+      else { el.textContent = ""; el.classList.add("hidden"); }
+    }
+
+    async function loadData(silent) {
+      if (loading) return;
+      if (!getKey()) { openKeyModal(""); return; }
+
+      loading = true;
+      $("btn-refresh").disabled = true;
+      $("refresh-icon").classList.add("animate-spin");
+      setConn("loading", "Memuat data...");
+      if (!silent) showBanner("");
+
+      try {
+        const res = await callApi({ action: "getAllData" });
+        allData = Array.isArray(res.data) ? res.data : [];
+        const t = new Date();
+        setConn("ok", "Terhubung - " + String(t.getHours()).padStart(2, "0") + ":" + String(t.getMinutes()).padStart(2, "0") + ":" + String(t.getSeconds()).padStart(2, "0"));
+        showBanner("");
+        applyFilters(false);
+      } catch (err) {
+        setConn("error", "Gagal terhubung");
+        if (err.code === "UNAUTHORIZED") {
+          clearKey();
+          openKeyModal(err.message);
+        } else {
+          showBanner(err.message);
+        }
+      } finally {
+        loading = false;
+        $("btn-refresh").disabled = false;
+        $("refresh-icon").classList.remove("animate-spin");
+      }
+    }
+
+    function scheduleAutoRefresh() {
+      clearInterval(autoTimer);
+      if ($("auto-refresh").checked) {
+        autoTimer = setInterval(() => {
+          const busy = saving || !$("modal-manage").classList.contains("hidden") || !$("modal-walkin").classList.contains("hidden") || !$("modal-key").classList.contains("hidden");
+          if (!busy && document.visibilityState === "visible") loadData(true);
+        }, AUTO_REFRESH_MS);
+      }
+    }
+
+    /* =====================================================
+     *  FILTER, STATISTIK, TABEL
+     * ===================================================== */
+    function renderStats() {
+      const today = todayYmd();
+      let pending = 0, proses = 0, siap = 0, selesai = 0, hariIni = 0;
+      allData.forEach((r) => {
+        const s = String(r.statusPelayanan || "").trim().toLowerCase();
+        if (s === "pending") pending++;
+        else if (s === "diproses") proses++;
+        else if (s === "siap diambil") siap++;
+        else if (s === "selesai") selesai++;
+        if (r.tanggalDatang === today) hariIni++;
+      });
+      $("stat-total").textContent = allData.length;
+      $("stat-total-sub").textContent = hariIni + " dijadwalkan datang hari ini";
+      $("stat-pending").textContent = pending;
+      $("stat-proses").textContent = proses;
+      $("stat-selesai").textContent = siap + selesai;
+      $("stat-selesai-sub").textContent = siap + " siap diambil, " + selesai + " selesai";
+    }
+
+    function applyFilters(resetPage) {
+      const q = $("f-search").value.trim().toLowerCase();
+      const qDigits = q.replace(/\D/g, "");
+      const status = $("f-status").value.toLowerCase();
+      const dateMode = $("f-date").value;
+      const sort = $("f-sort").value;
+      const today = todayYmd();
+
+      filtered = allData.filter((r) => {
+        if (status && String(r.statusPelayanan || "").trim().toLowerCase() !== status) return false;
+        if (dateMode === "today" && r.tanggalDatang !== today) return false;
+        if (q) {
+          const hay = (String(r.nama) + " " + String(r.trackingCode)).toLowerCase();
+          const waMatch = qDigits.length >= 3 && String(r.noWa).replace(/\D/g, "").includes(qDigits);
+          if (!hay.includes(q) && !waMatch) return false;
+        }
+        return true;
+      });
+
+      filtered.sort((a, b) => {
+        if (sort === "date-asc") return String(a.tanggalDatang).localeCompare(String(b.tanggalDatang)) || String(b.timestamp).localeCompare(String(a.timestamp));
+        if (sort === "date-desc") return String(b.tanggalDatang).localeCompare(String(a.tanggalDatang)) || String(b.timestamp).localeCompare(String(a.timestamp));
+        return String(b.timestamp).localeCompare(String(a.timestamp));
+      });
+
+      if (resetPage !== false) page = 1;
+      const maxPage = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+      if (page > maxPage) page = maxPage;
+
+      renderStats();
+      renderTable();
+    }
+
+    function renderTable() {
+      const start = (page - 1) * PAGE_SIZE;
+      const rows = filtered.slice(start, start + PAGE_SIZE);
+      const today = todayYmd();
+
+      $("tbody").innerHTML = rows.map((r) => {
+        const isToday = r.tanggalDatang === today;
+        const catatan = String(r.catatan || "");
+        return `
+          <tr class="hover:bg-slate-50 ${isToday ? "bg-indigo-50/40" : ""}">
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="font-semibold">${escapeHtml(formatTanggalPendek(r.tanggalDatang))}</span>
+              ${isToday ? '<span class="ml-1 rounded bg-indigo-600 px-1.5 py-0.5 text-[10px] font-bold text-white">HARI INI</span>' : ""}
+            </td>
+            <td class="px-4 py-3 font-mono text-xs font-semibold text-indigo-700 whitespace-nowrap">${escapeHtml(r.trackingCode)}</td>
+            <td class="px-4 py-3">${jalurBadgeHtml(r.jalur)}</td>
+            <td class="px-4 py-3 font-semibold text-slate-900">${escapeHtml(r.nama)}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-slate-600">${escapeHtml(r.noWa)}</td>
+            <td class="px-4 py-3 text-slate-700">${escapeHtml(r.jenisLayanan)}</td>
+            <td class="px-4 py-3">${statusBadgeHtml(r.statusPelayanan)}</td>
+            <td class="px-4 py-3 text-slate-600 max-w-[220px]"><span class="block truncate" title="${escapeHtml(catatan)}">${escapeHtml(catatan) || "-"}</span></td>
+            <td class="px-4 py-3 text-right">
+              <button type="button" data-code="${escapeHtml(r.trackingCode)}" class="btn-manage whitespace-nowrap rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-1.5 transition">Kelola / Verifikasi</button>
+            </td>
+          </tr>`;
+      }).join("");
+
+      const empty = filtered.length === 0;
+      $("table-empty").classList.toggle("hidden", !empty);
+      if (empty) {
+        $("table-empty-text").textContent = allData.length === 0 ? "Belum ada data pendaftar." : "Tidak ada data yang cocok dengan filter.";
+      }
+
+      const total = filtered.length;
+      const from = total === 0 ? 0 : start + 1;
+      const to = Math.min(start + PAGE_SIZE, total);
+      $("pager-info").textContent = `Menampilkan ${from}-${to} dari ${total} data (halaman ${page} dari ${Math.max(1, Math.ceil(total / PAGE_SIZE))})`;
+      $("filter-info").textContent = `${total} dari ${allData.length} pendaftar sesuai filter`;
+      $("pg-prev").disabled = page <= 1;
+      $("pg-next").disabled = start + PAGE_SIZE >= total;
+    }
+
+    $("tbody").addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-manage");
+      if (btn) openManage(btn.dataset.code);
+    });
+    $("pg-prev").addEventListener("click", () => { if (page > 1) { page--; renderTable(); window.scrollTo({ top: 0, behavior: "smooth" }); } });
+    $("pg-next").addEventListener("click", () => { page++; renderTable(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+
+    let searchTimer = null;
+    $("f-search").addEventListener("input", () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => applyFilters(true), 180); });
+    ["f-status", "f-date", "f-sort"].forEach((id) => $(id).addEventListener("change", () => applyFilters(true)));
+    $("btn-refresh").addEventListener("click", () => loadData(false));
+    $("auto-refresh").addEventListener("change", scheduleAutoRefresh);
+
+    /* =====================================================
+     *  MODAL KUNCI ADMIN
+     * ===================================================== */
+    function openKeyModal(errorMsg) {
+      const err = $("key-error");
+      if (errorMsg) { err.textContent = errorMsg; err.classList.remove("hidden"); }
+      else { err.textContent = ""; err.classList.add("hidden"); }
+      $("key-input").value = "";
+      openModal("modal-key");
+      setTimeout(() => $("key-input").focus(), 50);
+    }
+
+    $("form-key").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const k = $("key-input").value.trim();
+      if (!k) return;
+      setKey(k);
+      closeModalById("modal-key");
+      loadData(false);
+    });
+
+    $("btn-lock").addEventListener("click", () => {
+      clearKey();
+      allData = [];
+      applyFilters(true);
+      setConn("idle", "Terkunci");
+      openKeyModal("");
+    });
+
+    /* =====================================================
+     *  MODAL KELOLA STATUS
+     * ===================================================== */
+    function openManage(code) {
+      const r = allData.find((x) => x.trackingCode === code);
+      if (!r) return;
+      selectedCode = code;
+
+      $("m-kode").textContent = r.trackingCode;
+      $("m-nama").textContent = r.nama;
+      $("m-wa").textContent = r.noWa || "-";
+      const link = waLink(r.noWa);
+      const a = $("m-wa-link");
+      if (link) { a.href = link; a.classList.remove("hidden"); } else { a.classList.add("hidden"); a.removeAttribute("href"); }
+      $("m-dusun").textContent = r.dusun || "-";
+      $("m-jalur").innerHTML = jalurBadgeHtml(r.jalur);
+      $("m-layanan").textContent = r.jenisLayanan;
+      $("m-tanggal").textContent = formatTanggalPanjang(r.tanggalDatang);
+      $("m-timestamp").textContent = r.timestamp ? r.timestamp + " WIB" : "-";
+      $("m-current-badge").innerHTML = "Status saat ini: " + statusBadgeHtml(r.statusPelayanan);
+
+      const layanan = findLayanan(r.jenisLayanan);
+      $("m-berkas").innerHTML = layanan
+        ? layanan.syarat.map((s, i) => `
+            <li><label class="flex items-start gap-2 text-sm text-amber-950 cursor-pointer">
+              <input type="checkbox" class="mt-0.5 w-4 h-4 rounded border-amber-400 text-indigo-600 focus:ring-indigo-300" />
+              <span>${escapeHtml(s)}</span></label></li>`).join("")
+        : '<li class="text-sm text-amber-900">Daftar syarat tidak tersedia untuk layanan ini.</li>';
+
+      // Dropdown status (tambahkan opsi bila nilai tidak standar)
+      const sel = $("m-status");
+      Array.from(sel.querySelectorAll("option[data-extra]")).forEach((o) => o.remove());
+      const known = Array.from(sel.options).map((o) => o.value);
+      if (!known.includes(r.statusPelayanan)) {
+        const o = document.createElement("option");
+        o.value = r.statusPelayanan; o.textContent = r.statusPelayanan; o.dataset.extra = "1";
+        sel.appendChild(o);
+      }
+      sel.value = r.statusPelayanan;
+
+      $("m-catatan").value = r.catatan || "";
+      $("m-chips").innerHTML = CATATAN_CEPAT.map((c) =>
+        `<button type="button" data-chip="${escapeHtml(c)}" class="chip rounded-full bg-slate-100 hover:bg-indigo-100 hover:text-indigo-700 text-slate-600 text-xs font-semibold px-3 py-1 transition">${escapeHtml(c)}</button>`
+      ).join("");
+
+      $("m-error").classList.add("hidden");
+      setSaving(false);
+      openModal("modal-manage");
+    }
+
+    function closeManage() { closeModalById("modal-manage"); selectedCode = null; }
+
+    function setSaving(on) {
+      saving = on;
+      $("m-save").disabled = on;
+      $("m-spin").classList.toggle("hidden", !on);
+      $("m-save-label").textContent = on ? "Menyimpan..." : "Simpan Perubahan";
+    }
+
+    $("m-chips").addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip");
+      if (!chip) return;
+      $("m-catatan").value = chip.dataset.chip;
+      $("m-catatan").focus();
+    });
+
+    $("m-close").addEventListener("click", closeManage);
+    $("m-cancel").addEventListener("click", closeManage);
+
+    $("m-save").addEventListener("click", async () => {
+      if (!selectedCode || saving) return;
+      const newStatus = $("m-status").value;
+      const catatan = $("m-catatan").value.trim();
+      $("m-error").classList.add("hidden");
+      setSaving(true);
+
+      try {
+        const res = await callApi({ action: "updateStatus", trackingCode: selectedCode, newStatus: newStatus, catatan: catatan });
+        const row = allData.find((x) => x.trackingCode === selectedCode);
+        if (row) {
+          row.statusPelayanan = res.statusPelayanan || newStatus;
+          row.catatan = typeof res.catatan === "string" ? res.catatan : catatan;
+        }
+        const code = selectedCode;
+        closeManage();
+        applyFilters(false);
+        toast("Status " + code + " diperbarui menjadi \"" + newStatus + "\".");
+      } catch (err) {
+        if (err.code === "UNAUTHORIZED") {
+          clearKey();
+          closeManage();
+          openKeyModal(err.message);
+        } else {
+          $("m-error").textContent = err.message;
+          $("m-error").classList.remove("hidden");
+        }
+      } finally {
+        setSaving(false);
+      }
+    });
+
+    /* =====================================================
+     *  MODAL WALK-IN
+     * ===================================================== */
+    let lastWalkin = null;
+
+    function initWalkinForm() {
+      const sel = $("w-layanan");
+      LAYANAN.forEach((l) => {
+        const o = document.createElement("option");
+        o.value = l.nama; o.textContent = l.nama;
+        sel.appendChild(o);
+      });
+    }
+
+    function walkinError(field, message) {
+      const el = document.querySelector(`.w-err[data-for="${field}"]`);
+      const input = $(field);
+      if (message) { el.textContent = message; el.classList.remove("hidden"); input.classList.add("border-red-400"); }
+      else { el.textContent = ""; el.classList.add("hidden"); input.classList.remove("border-red-400"); }
+    }
+
+    function resetWalkin() {
+      $("form-walkin").reset();
+      $("w-tanggal").value = todayYmd();
+      $("w-tanggal").min = todayYmd();
+      $("w-berkas-box").classList.add("hidden");
+      $("w-error").classList.add("hidden");
+      ["w-nama", "w-wa", "w-dusun", "w-layanan", "w-tanggal"].forEach((f) => walkinError(f, ""));
+      setWalkinLoading(false);
+      $("walkin-form-view").classList.remove("hidden");
+      $("walkin-success-view").classList.add("hidden");
+    }
+
+    function openWalkin() {
+      if (!getKey()) { openKeyModal(""); return; }
+      resetWalkin();
+      openModal("modal-walkin");
+      setTimeout(() => $("w-nama").focus(), 50);
+    }
+
+    function closeWalkin() { closeModalById("modal-walkin"); }
+
+    function setWalkinLoading(on) {
+      $("w-submit").disabled = on;
+      $("w-spin").classList.toggle("hidden", !on);
+      $("w-submit-label").textContent = on ? "Menyimpan..." : "Daftarkan & Buat Kode";
+    }
+
+    $("btn-walkin").addEventListener("click", openWalkin);
+    $("w-close").addEventListener("click", closeWalkin);
+    $("w-cancel").addEventListener("click", closeWalkin);
+
+    $("w-layanan").addEventListener("change", () => {
+      const l = findLayanan($("w-layanan").value);
+      if (!l) { $("w-berkas-box").classList.add("hidden"); return; }
+      $("w-berkas").innerHTML = l.syarat.map((s) => `<li>${escapeHtml(s)}</li>`).join("");
+      $("w-berkas-box").classList.remove("hidden");
+    });
+
+    function validateWalkin() {
+      let ok = true;
+      const nama = $("w-nama").value.trim();
+      const wa = normalizePhone($("w-wa").value);
+      if (nama.length < 3) { walkinError("w-nama", "Nama lengkap minimal 3 karakter."); ok = false; } else walkinError("w-nama", "");
+      if (wa && !/^(\+62|62|0)8[1-9][0-9]{6,11}$/.test(wa)) { walkinError("w-wa", "Nomor WA tidak valid. Kosongkan bila warga tidak punya."); ok = false; } else walkinError("w-wa", "");
+      if (!$("w-dusun").value) { walkinError("w-dusun", "Pilih dusun."); ok = false; } else walkinError("w-dusun", "");
+      if (!$("w-layanan").value) { walkinError("w-layanan", "Pilih jenis layanan."); ok = false; } else walkinError("w-layanan", "");
+      const tgl = $("w-tanggal").value;
+      if (!tgl) { walkinError("w-tanggal", "Pilih tanggal."); ok = false; }
+      else if (tgl < todayYmd()) { walkinError("w-tanggal", "Tanggal tidak boleh sebelum hari ini."); ok = false; }
+      else walkinError("w-tanggal", "");
+      return ok;
+    }
+
+    $("form-walkin").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("w-error").classList.add("hidden");
+      if (!validateWalkin()) return;
+
+      const payload = {
+        action: "register",
+        jalur: "Offline",
+        nama: $("w-nama").value.trim(),
+        noWa: normalizePhone($("w-wa").value),
+        dusun: $("w-dusun").value,
+        jenisLayanan: $("w-layanan").value,
+        tanggalDatang: $("w-tanggal").value,
+        catatan: $("w-catatan").value.trim()
+      };
+
+      setWalkinLoading(true);
+      try {
+        const res = await callApi(payload);
+        if (!res.trackingCode) throw new ApiError("Server tidak mengembalikan kode tracking.");
+        lastWalkin = { kode: res.trackingCode, nama: payload.nama, layanan: payload.jenisLayanan, tanggal: payload.tanggalDatang };
+
+        $("ws-kode").textContent = lastWalkin.kode;
+        $("ws-nama").textContent = lastWalkin.nama;
+        $("ws-layanan").textContent = lastWalkin.layanan;
+        $("ws-tanggal").textContent = formatTanggalPanjang(lastWalkin.tanggal);
+
+        $("walkin-form-view").classList.add("hidden");
+        $("walkin-success-view").classList.remove("hidden");
+        loadData(true);
+      } catch (err) {
+        if (err.code === "UNAUTHORIZED") {
+          clearKey();
+          closeWalkin();
+          openKeyModal(err.message);
+        } else {
+          $("w-error").textContent = err.message;
+          $("w-error").classList.remove("hidden");
+        }
+      } finally {
+        setWalkinLoading(false);
+      }
+    });
+
+    $("ws-another").addEventListener("click", resetWalkin);
+    $("ws-done").addEventListener("click", closeWalkin);
+    $("ws-print").addEventListener("click", () => {
+      if (!lastWalkin) return;
+      $("ps-kode").textContent = lastWalkin.kode;
+      $("ps-nama").textContent = lastWalkin.nama;
+      $("ps-layanan").textContent = lastWalkin.layanan;
+      $("ps-tanggal").textContent = formatTanggalPanjang(lastWalkin.tanggal);
+      window.print();
+    });
+
+    /* =====================================================
+     *  KEYBOARD & INIT
+     * ===================================================== */
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      if (!$("modal-manage").classList.contains("hidden")) closeManage();
+      else if (!$("modal-walkin").classList.contains("hidden")) closeWalkin();
+    });
+
+    (function init() {
+      initWalkinForm();
+      $("w-tanggal").value = todayYmd();
+      applyFilters(true);
+      scheduleAutoRefresh();
+
+      if (!getKey()) {
+        setConn("idle", "Menunggu kunci admin");
+        openKeyModal("");
+      } else {
+        loadData(false); // otomatis memuat seluruh data saat halaman dibuka
+      }
+    })();
+  </script>
+</body>
+</html>
