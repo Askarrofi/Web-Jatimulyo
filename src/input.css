@@ -10,15 +10,15 @@
     .field input:not([type="hidden"]),
     .field select,
     .field textarea {
-        @apply w-full border border-slate-300 px-3.5 py-2.5 outline-none transition focus:border-accent-500 focus:ring-2 focus:ring-accent-200;
+        @apply w-full border border-slate-300 px-3.5 py-2.5 shadow-sm outline-none transition duration-200 focus:border-accent-500 focus:ring-2 focus:ring-accent-200 focus:shadow-md;
     }
 
     .field select {
-        @apply bg-blue-50;
+        @apply bg-brand-50;
     }
 
     .field > button {
-        @apply w-full border border-slate-300 bg-blue-50 px-3.5 py-2.5 text-left text-slate-800 outline-none transition focus:border-accent-500 focus:ring-2 focus:ring-accent-200;
+        @apply w-full border border-slate-300 bg-brand-50 px-3.5 py-2.5 text-left text-slate-800 shadow-sm outline-none transition duration-200 focus:border-accent-500 focus:ring-2 focus:ring-accent-200 focus:shadow-md;
     }
 
     .field [data-err] {
@@ -47,7 +47,7 @@
     }
 
     .field-card {
-        @apply bg-blue-50 p-4 shadow-md ring-1 ring-slate-300 transition hover:ring-blue-300 focus-within:ring-2 focus-within:ring-blue-400;
+        @apply bg-brand-50 p-4 shadow-md ring-1 ring-slate-300 transition-shadow duration-200 hover:shadow-lg focus-within:shadow-lg focus-within:ring-2 focus-within:ring-brand-400;
     }
 
     .field-card.field-invalid {
@@ -101,11 +101,11 @@
     }
 
     .cal-panel {
-        @apply relative w-full max-w-xs bg-blue-50 shadow-2xl p-4;
+        @apply relative w-full max-w-xs bg-brand-50 shadow-2xl p-4;
     }
 
     .filter-panel {
-        @apply bg-blue-50 shadow-sm ring-1 ring-slate-200 p-4;
+        @apply bg-brand-50 shadow-md ring-1 ring-slate-200 p-4 transition-shadow duration-200 hover:shadow-lg;
     }
 
     .filter-head {
@@ -113,7 +113,7 @@
     }
 
     .filter-title {
-        @apply font-bold text-blue-900;
+        @apply font-bold text-brand-900;
     }
 
     .filter-grid {
@@ -142,27 +142,36 @@
 
     .filter-field input,
     .filter-field select {
-        @apply w-full border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-accent-500 focus:ring-2 focus:ring-accent-200;
+        @apply w-full border border-slate-300 px-3 py-2 text-sm shadow-sm outline-none transition duration-200 focus:border-accent-500 focus:ring-2 focus:ring-accent-200 focus:shadow-md;
     }
 
     .filter-field select {
-        @apply bg-blue-50;
+        @apply bg-brand-50;
     }
 
     .btn-primary {
-        @apply inline-flex items-center justify-center gap-2 bg-cta-700 hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold transition;
+        @apply inline-flex items-center justify-center gap-2 bg-cta-700 hover:bg-cta-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold shadow-md transition duration-200 hover:shadow-lg active:shadow-sm;
+    }
+    .btn-primary.is-loading {
+        @apply cursor-wait;
+    }
+    [aria-busy="true"] input,
+    [aria-busy="true"] select,
+    [aria-busy="true"] textarea,
+    [aria-busy="true"] button:not(.is-loading) {
+        @apply pointer-events-none;
     }
 
     .btn-secondary {
-        @apply bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed;
+        @apply bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold shadow-sm transition duration-200 hover:shadow-md active:shadow-sm disabled:opacity-40 disabled:cursor-not-allowed;
     }
 
     .btn-muted {
-        @apply border border-slate-300 bg-blue-50 px-3 py-1.5 font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed;
+        @apply border border-slate-300 bg-brand-50 px-3 py-1.5 font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed;
     }
 
     .stat-card {
-        @apply bg-blue-50 p-4 shadow-sm ring-1 ring-slate-200 border-l-4;
+        @apply bg-brand-50 p-4 shadow-md ring-1 ring-slate-200 border-l-4 transition-shadow duration-200 hover:shadow-lg;
     }
 
     .stat-card p:first-child {
@@ -178,7 +187,7 @@
     }
 
     thead th {
-        @apply px-4 py-3 text-center font-semibold whitespace-nowrap;
+        @apply px-3 py-2.5 text-center font-semibold whitespace-nowrap;
     }
 
     .tab-nav {
@@ -186,15 +195,15 @@
     }
 
     .tab-btn {
-        @apply px-2 py-1.5 text-xs sm:text-sm sm:px-4 sm:py-2 font-semibold leading-tight text-center transition bg-blue-900;
+        @apply px-2 py-1.5 text-xs sm:text-sm sm:px-4 sm:py-2 font-semibold leading-tight text-center transition bg-brand-900;
     }
 
     .tab-btn[aria-selected="true"] {
-        @apply bg-slate-50 text-blue-800;
+        @apply bg-slate-50 text-brand-800;
     }
 
     .tab-btn[aria-selected="false"] {
-        @apply text-blue-100 hover:bg-white/10 hover:text-white;
+        @apply text-brand-100 hover:bg-white/10 hover:text-white;
     }
 
     .badge {
@@ -205,17 +214,20 @@
         @apply inline-flex items-center gap-2 px-4 py-1.5 text-sm font-bold;
     }
 
-    [data-status="pending"],
+    [data-status="pending"] {
+        @apply bg-slate-100 text-slate-800 ring-1 ring-slate-400;
+    }
+
     [data-status="diproses"] {
-        @apply bg-blue-100 text-blue-900 ring-1 ring-blue-500;
+        @apply bg-brand-100 text-brand-900 ring-1 ring-brand-500;
     }
 
     [data-status="siap diambil"] {
-        @apply bg-amber-100 text-amber-900 ring-1 ring-amber-500;
+        @apply bg-green-100 text-green-900 ring-1 ring-green-400;
     }
 
     [data-status="selesai"] {
-        @apply bg-green-100 text-green-900 ring-1 ring-green-500;
+        @apply bg-green-700 text-white ring-1 ring-green-800;
     }
 
     [data-status="unknown"] {
@@ -227,7 +239,7 @@
     }
 
     [data-jalur="offline"] {
-        @apply bg-red-100 text-red-900 ring-1 ring-red-300;
+        @apply bg-slate-100 text-slate-800 ring-1 ring-slate-300;
     }
 
     #res-steps li {
@@ -235,15 +247,15 @@
     }
 
     #res-steps li[data-done] {
-        @apply text-blue-800 font-bold;
+        @apply text-brand-800 font-bold;
     }
 
     .date-chip {
-        @apply border border-blue-200 bg-blue-50 text-blue-800 text-xs font-semibold px-3 py-1.5 transition hover:bg-blue-100;
+        @apply border border-brand-200 bg-brand-50 text-brand-800 text-xs font-semibold px-3 py-1.5 shadow-sm transition duration-200 hover:bg-brand-100 hover:shadow-md active:shadow-sm;
     }
 
     .chip {
-        @apply bg-slate-100 hover:bg-blue-100 hover:text-blue-700 text-slate-600 text-xs font-semibold px-3 py-1 transition;
+        @apply bg-slate-100 hover:bg-brand-100 hover:text-brand-700 text-slate-600 text-xs font-semibold px-3 py-1 shadow-sm transition duration-200 hover:shadow-md active:shadow-sm;
     }
 
     .check-list {
@@ -259,7 +271,7 @@
     }
 
     .berkas-box {
-        @apply border border-amber-200 bg-amber-50 p-4;
+        @apply border border-amber-200 bg-amber-50 p-4 shadow-sm;
     }
 
     .berkas-title {
@@ -267,7 +279,7 @@
     }
 
     .info-link {
-        @apply inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 underline decoration-blue-300 underline-offset-2 hover:decoration-blue-700 transition;
+        @apply inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 underline decoration-brand-300 underline-offset-2 hover:decoration-brand-700 transition;
     }
 
     .info-link svg {
@@ -275,7 +287,7 @@
     }
 
     .kode-list-box {
-        @apply bg-blue-50 p-4 shadow-md ring-1 ring-slate-300;
+        @apply bg-brand-50 p-4 shadow-md ring-1 ring-slate-300;
     }
 
     .kode-list-head {
@@ -283,7 +295,7 @@
     }
 
     .kode-list-label {
-        @apply text-sm font-bold text-blue-900 mb-1.5;
+        @apply text-sm font-bold text-brand-900 mb-1.5;
     }
 
     .kode-list {
@@ -291,15 +303,15 @@
     }
 
     .kode-item {
-        @apply w-full flex items-center justify-between gap-3 border border-blue-200 bg-white px-3 py-2 text-left transition hover:bg-blue-100;
+        @apply w-full flex items-center justify-between gap-3 border border-brand-200 bg-white px-3 py-2 text-left shadow-sm transition duration-200 hover:bg-brand-100 hover:shadow-md active:shadow-sm;
     }
 
     .kode-item-full {
-        @apply font-mono text-sm font-bold text-blue-900 break-all;
+        @apply font-mono text-sm font-bold text-brand-900 break-all;
     }
 
     .site-footer {
-        @apply bg-blue-900 text-blue-100 text-sm;
+        @apply bg-brand-900 text-brand-100 text-sm;
     }
 
     .footer-grid {
@@ -319,7 +331,7 @@
     }
 
     .splash-slot {
-        @apply w-28 h-28 border border-white/40 bg-white/10 flex items-end justify-center p-2 text-[10px] leading-tight text-blue-100;
+        @apply w-28 h-28 border border-white/40 bg-white/10 flex items-end justify-center p-2 text-[10px] leading-tight text-brand-100;
     }
 
     .alert-error {
@@ -331,11 +343,11 @@
     }
 
     .modal-panel {
-        @apply bg-blue-50 w-full shadow-2xl;
+        @apply bg-brand-50 w-full shadow-2xl;
     }
 
     .modal-head {
-        @apply flex items-start justify-between gap-3 px-6 py-4 border-b border-slate-200 sticky top-0 bg-blue-50;
+        @apply flex items-start justify-between gap-3 px-6 py-4 border-b border-slate-200 sticky top-0 bg-brand-50;
     }
 
     .icon-btn {
@@ -359,7 +371,7 @@
     }
 
     .success-head {
-        @apply bg-gradient-to-r from-green-600 to-emerald-500 text-white px-6 py-5 text-center;
+        @apply bg-green-700 text-white px-6 py-5 text-center shadow-md;
     }
 
     .success-head h2,
@@ -368,7 +380,7 @@
     }
 
     .code-card {
-        @apply bg-slate-50 ring-1 ring-slate-200 p-4 text-center;
+        @apply bg-slate-50 ring-1 ring-slate-200 p-4 text-center shadow-sm;
     }
 
     .code-card > p:first-child {
@@ -400,7 +412,7 @@
     }
 
     .section-head h2 {
-        @apply text-2xl font-bold text-blue-900;
+        @apply text-2xl font-bold text-brand-900;
     }
 
     .section-head > p {
@@ -408,7 +420,7 @@
     }
 
     .modal-title {
-        @apply text-lg font-bold text-blue-900;
+        @apply text-lg font-bold text-brand-900;
     }
 
     [data-cal-grid] [data-cell] {
@@ -416,7 +428,7 @@
     }
 
     [data-cal-grid] [data-cell][data-state="on"] {
-        @apply font-semibold text-blue-900 hover:bg-blue-100;
+        @apply font-semibold text-brand-900 hover:bg-brand-100;
     }
 
     [data-cal-grid] [data-cell][data-state="off"] {
@@ -424,85 +436,11 @@
     }
 
     [data-cal-grid] [data-cell][data-state="sel"] {
-        @apply font-semibold bg-blue-900 text-white;
+        @apply font-semibold bg-brand-900 text-white;
     }
 
-    .conn-swap {
-        display: grid;
-        justify-items: center;
-    }
-
-    .conn-swap>span {
-        grid-area: 1 / 1;
-    }
-
-    .conn-time {
-        display: none;
-    }
-
-    #splash {
-        animation: splashOut 3.4s ease forwards;
-    }
-
-    #conn {
-        @apply bg-red-600 text-white font-semibold;
-    }
-
-    #conn[data-state="ok"] {
-        @apply bg-green-700;
-    }
-
-    #conn[data-state="loading"] {
-        @apply bg-amber-500 animate-pulse;
-    }
-
-    #conn[data-state="idle"] {
-        @apply bg-slate-500;
-    }
-
-    #conn[data-state="ok"] #conn-state {
-        animation: connState 4s ease-in-out infinite;
-    }
-
-    #conn[data-state="ok"] .conn-time {
-        display: block;
-        animation: connTime 4s ease-in-out infinite;
-    }
 }
 
-@keyframes connState {
-
-    0%,
-    45% {
-        opacity: 1;
-    }
-
-    55%,
-    95% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
-@keyframes connTime {
-
-    0%,
-    45% {
-        opacity: 0;
-    }
-
-    55%,
-    95% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-    }
-}
 
 @keyframes splashOut {
 
@@ -595,12 +533,13 @@ details[open] .chevron {
     position: fixed;
     inset: 0;
     z-index: -1;
-    background-image:
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.97) 0%, rgba(255, 255, 255, 0.95) 55%, rgba(255, 255, 255, 0.92) 100%),
-        url("../assets/balai-desa.jpg");
+    background-color: rgba(248, 250, 252, 0.9);
+    background-image: url("../assets/balai-desa.jpg");
+    background-blend-mode: screen;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 #print-slip {
@@ -679,21 +618,53 @@ details[open] .chevron {
         animation: none;
     }
 
-    #conn .conn-swap {
-        display: flex;
-        gap: .4rem;
-    }
-
-    #conn .conn-swap>span {
-        grid-area: auto;
-    }
-
-    #conn #conn-state,
-    #conn .conn-time {
-        animation: none;
-    }
 
     #splash {
         animation-name: splashHide;
     }
+}
+
+
+.conn-swap {
+    display: grid;
+    min-width: 5.5rem;
+    justify-items: center;
+}
+
+.conn-swap > span {
+    grid-area: 1 / 1;
+}
+
+#conn {
+    background-color: #64748b;
+    color: #fff;
+    font-weight: 600;
+}
+
+#conn[data-state="ok"] {
+    background-color: #15803d;
+}
+
+#conn[data-state="loading"] {
+    background-color: #f59e0b;
+}
+
+#conn[data-state="ok"] #conn-state {
+    animation: connState 6s linear infinite;
+}
+
+#conn[data-state="ok"] #conn-time {
+    animation: connTime 6s linear infinite;
+}
+
+@keyframes connState {
+    0%, 42% { opacity: 1; visibility: visible; }
+    48%, 94% { opacity: 0; visibility: hidden; }
+    100% { opacity: 1; visibility: visible; }
+}
+
+@keyframes connTime {
+    0%, 42% { opacity: 0; visibility: hidden; }
+    48%, 94% { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: hidden; }
 }

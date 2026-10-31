@@ -61,7 +61,7 @@ $("form-walkin").addEventListener("submit", async (e) => {
         return;
     }
 
-    setLoading("w-submit", "w-spin", "w-submit-label", true, "Membuat kode...");
+    setLoading("w-submit", "w-spin", "w-submit-label", true, "Menyimpan pendaftaran...");
 
     const payload = {
         action: "register",
@@ -82,7 +82,7 @@ $("form-walkin").addEventListener("submit", async (e) => {
     } catch (err) {
         $("w-error").textContent = err.message;
         $("w-error").classList.remove("hidden");
-        setLoading("w-submit", "w-spin", "w-submit-label", false, "Membuat kode...");
+        setLoading("w-submit", "w-spin", "w-submit-label", false, "Menyimpan pendaftaran...");
         return;
     }
 
@@ -98,7 +98,7 @@ $("form-walkin").addEventListener("submit", async (e) => {
 
     $("walkin-form-view").classList.add("hidden");
     $("walkin-success-view").classList.remove("hidden");
-    setLoading("w-submit", "w-spin", "w-submit-label", false, "Membuat kode...");
+    setLoading("w-submit", "w-spin", "w-submit-label", false, "Menyimpan pendaftaran...");
     await load();
 });
 

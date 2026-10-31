@@ -17,15 +17,26 @@ function openManage(r) {
     current = r;
     $("m-kode").textContent = "Kode Tracking: " + String(r.trackingCode || "").slice(-4).toUpperCase();
     $("m-nama").textContent = r.nama || "-";
-    $("m-wa").textContent = r.noWa || "-";
-    $("m-wa-link").classList.toggle("hidden", !r.noWa);
-    $("m-wa-link").href = r.noWa ? "https://wa.me/" + String(r.noWa).replace(/\D/g, "").replace(/^0/, "62") : "#";
+    $("m-wa").textContent = formatPhoneId(r.noWa);
+    const phone = String(r.noWa || "").replace(/\D/g, "");
+    const whatsappPhone = phone.replace(/^0/, "62");
+
+    $("m-wa-link").classList.toggle("hidden", !phone);
+    $("m-call-link").classList.toggle("hidden", !phone);
+
+    $("m-wa-link").href = phone
+        ? "https://wa.me/" + whatsappPhone
+        : "#";
+
+    $("m-call-link").href = phone
+        ? "tel:+" + whatsappPhone
+        : "#";
     $("m-dusun").textContent = r.dusun || "-";
     $("m-rt").textContent = r.rt || "-";
     $("m-jalur").textContent = r.jalur || "-";
     $("m-layanan").textContent = r.jenisLayanan || "-";
     $("m-tanggal").textContent = formatTanggalPanjang(r.tanggalDatang);
-    $("m-timestamp").textContent = r.timestamp || "-";
+    $("m-timestamp").textContent = formatDateTimeId(r.timestamp);
     $("m-catatan").value = r.catatan || "";
     renderStatusOptions(r.statusPelayanan || "Diproses");
     const style = getStatusStyle(r.statusPelayanan);
@@ -47,8 +58,18 @@ $("modal-manage").addEventListener("click", (e) => { if (e.target === $("modal-m
 
 $("m-chips").addEventListener("click", (e) => {
     const chip = e.target.closest("button[data-chip]");
-    if (!chip) return;
-    $("m-catatan").value = chip.dataset.chip;
+    if (chip === null) return;
+    const note = chip.dataset.chip;
+    const notes = $("m-catatan").value
+        .split("\n")
+        .map((value) => value.trim())
+        .filter(Boolean);
+
+    if (!notes.includes(note)) {
+        notes.push(note);
+    }
+
+    $("m-catatan").value = notes.join("\n");
     $("m-catatan").focus();
 });
 
@@ -56,7 +77,7 @@ $("m-save").addEventListener("click", async () => {
     const status = $("m-status").value;
     const catatan = $("m-catatan").value.trim();
 
-    setLoading("m-save", "m-spin", "m-save-label", true, "Menyimpan...");
+    setLoading("m-save", "m-spin", "m-save-label", true, "Menyimpan perubahan...");
 
     try {
         await callApi({
@@ -71,7 +92,7 @@ $("m-save").addEventListener("click", async () => {
     } catch (err) {
         showError(err.message);
     } finally {
-        setLoading("m-save", "m-spin", "m-save-label", false, "Menyimpan...");
+        setLoading("m-save", "m-spin", "m-save-label", false, "Menyimpan perubahan...");
     }
 });
 

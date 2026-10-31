@@ -11,11 +11,11 @@ function buildCalendarEl() {
         '<div class="cal-backdrop" data-cal="close"></div>' +
         '<div class="cal-panel">' +
         '<div class="mb-2 flex items-center justify-between">' +
-        '<button type="button" data-cal="prev" aria-label="Bulan sebelumnya" class="p-2 text-blue-900 transition hover:bg-blue-100">' +
+        '<button type="button" data-cal="prev" aria-label="Bulan sebelumnya" class="p-2 text-brand-900 transition hover:bg-brand-100">' +
         '<svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>' +
         "</button>" +
-        '<p data-cal-title class="text-sm font-bold text-blue-900"></p>' +
-        '<button type="button" data-cal="next" aria-label="Bulan berikutnya" class="p-2 text-blue-900 transition hover:bg-blue-100">' +
+        '<p data-cal-title class="text-sm font-bold text-brand-900"></p>' +
+        '<button type="button" data-cal="next" aria-label="Bulan berikutnya" class="p-2 text-brand-900 transition hover:bg-brand-100">' +
         '<svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>' +
         "</button>" +
         "</div>" +
@@ -59,14 +59,41 @@ function todayYmd() {
     return get("year") + "-" + get("month") + "-" + get("day");
 }
 
+function normalizeYmd(value) {
+    const text = String(value || "").trim();
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+        return text;
+    }
+
+    if (!text) return "";
+
+    const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Jakarta",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).formatToParts(new Date(text));
+
+    const part = (type) => {
+        return parts.find((item) => item.type === type).value;
+    };
+
+    return part("year")
+        + "-"
+        + part("month")
+        + "-"
+        + part("day");
+}
+
 function formatTanggalPanjang(ymd) {
-    const d = parseYmd(ymd);
+    const d = parseYmd(normalizeYmd(ymd));
     if (!d) return ymd || "-";
     return `${HARI[d.getDay()]}, ${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 function formatTanggalDmy(ymd) {
-    const d = parseYmd(ymd);
+    const d = parseYmd(normalizeYmd(ymd));
     if (!d) return ymd || "-";
     return d.getDate() + " " + BULAN[d.getMonth()] + " " + d.getFullYear();
 }

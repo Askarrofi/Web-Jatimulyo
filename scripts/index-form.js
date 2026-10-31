@@ -5,29 +5,37 @@ function renderChecklist() {
 }
 
 function initDateChips() {
-    const d = parseYmd(todayYmd());
-    const ymds = [];
-    while (ymds.length < 3) {
-        if (!HARI_TANPA_PELAYANAN.includes(d.getDay())) ymds.push(ymdFrom(d));
-        d.setDate(d.getDate() + 1);
+    const date = parseYmd(todayYmd());
+    const dates = [];
+
+    date.setDate(date.getDate() + 1);
+
+    while (dates.length < 2) {
+        if (!HARI_TANPA_PELAYANAN.includes(date.getDay())) {
+            dates.push(ymdFrom(date));
+        }
+
+        date.setDate(date.getDate() + 1);
     }
-    const today = todayYmd();
-    $("date-chips").querySelectorAll(".date-chip").forEach((chip, i) => {
-        const ymd = ymds[i];
-        const c = parseYmd(ymd);
-        const diff = Math.round((c - parseYmd(today)) / 86400000);
-        let word = diff + " hari lagi";
-        if (diff === 0) word = "Hari ini";
-        if (diff === 1) word = "Besok";
-        if (diff === 2) word = "Lusa";
-        chip.textContent = diff === 0 ? word : word + ", " + c.getDate() + " " + BULAN_PENDEK[c.getMonth()];
+
+    $("date-chips").querySelectorAll(".date-chip").forEach((chip, index) => {
+        const ymd = dates[index];
+        const selected = parseYmd(ymd);
+
+        chip.textContent =
+            HARI[selected.getDay()]
+            + ", "
+            + selected.getDate()
+            + " "
+            + BULAN_PENDEK[selected.getMonth()];
+
         chip.dataset.ymd = ymd;
     });
 }
 
 $("date-chips").addEventListener("click", (e) => {
     const chip = e.target.closest("button[data-ymd]");
-    if (!chip) return;
+    if (chip === null) return;
     $("tanggalDatang").value = chip.dataset.ymd;
     syncTanggalField("tanggalDatang", calPublic);
 });
@@ -131,7 +139,7 @@ $("form-daftar").addEventListener("submit", async (e) => {
         tanggalDatang: $("tanggalDatang").value
     };
 
-    setLoading("btn-submit", "spin-submit", "label-submit", true, "Mengirim...");
+    setLoading("btn-submit", "spin-submit", "label-submit", true, "Mengirim pendaftaran...");
 
     let result;
     try {
@@ -141,7 +149,7 @@ $("form-daftar").addEventListener("submit", async (e) => {
         }
     } catch (err) {
         showFormErrors([{ field: "", msg: err.message }]);
-        setLoading("btn-submit", "spin-submit", "label-submit", false, "Mengirim...");
+        setLoading("btn-submit", "spin-submit", "label-submit", false, "Mengirim pendaftaran...");
         return;
     }
     const kodeFull = String(result.trackingCode).toUpperCase();
@@ -152,7 +160,7 @@ $("form-daftar").addEventListener("submit", async (e) => {
     calPublic.sync();
     $("noWa").classList.remove("field-ok");
     $("checklist-box").classList.add("hidden");
-    setLoading("btn-submit", "spin-submit", "label-submit", false, "Mengirim...");
+    setLoading("btn-submit", "spin-submit", "label-submit", false, "Mengirim pendaftaran...");
 });
 
 $("jenisLayanan").addEventListener("change", renderChecklist);

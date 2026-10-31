@@ -19,7 +19,7 @@ function liveKodeFeedback() {
 
 function checkKode(v) {
     const s = v.trim().toUpperCase();
-    if (!s) return "Masukkan kode tracking terlebih dahulu.";
+    if (!s) return "Masukkan Kode Tracking terlebih dahulu.";
     return KODE_REGEX.test(s) ? "" : "Kode terdiri dari 4 huruf atau angka, contoh K7M2.";
 }
 
@@ -87,14 +87,14 @@ $("form-status").addEventListener("submit", async (e) => {
     if (kodeMsg) { setFieldError("trackingCode", kodeMsg); $("trackingCode").focus(); return; }
     setFieldError("trackingCode", "");
 
-    setLoading("btn-status", "spin-status", "label-status", true, "Memeriksa...");
+    setLoading("btn-status", "spin-status", "label-status", true, "Memeriksa status...");
 
     let data;
     try {
         data = await callApi({ action: "checkStatus", trackingCode: kode });
     } catch (err) {
         showStatusError(err.message);
-        setLoading("btn-status", "spin-status", "label-status", false, "Memeriksa...");
+        setLoading("btn-status", "spin-status", "label-status", false, "Memeriksa status...");
         return;
     }
     addKode(String(data.trackingCode).toUpperCase());
@@ -105,7 +105,7 @@ $("form-status").addEventListener("submit", async (e) => {
     $("res-nama").textContent = data.nama || "-";
     $("res-layanan").textContent = data.jenisLayanan || "-";
     $("res-tanggal").textContent = formatTanggalPanjang(data.tanggalDatang);
-    $("res-catatan").textContent = data.catatan && data.catatan.trim() ? data.catatan : "Belum ada catatan dari petugas.";
+    $("res-catatan").textContent = data.catatan && data.catatan.trim() ? data.catatan : "Belum ada catatan dari Operator.";
 
     const badge = $("res-badge");
     badge.dataset.status = style.key;
@@ -114,5 +114,5 @@ $("form-status").addEventListener("submit", async (e) => {
     renderSteps(style.step);
     $("status-result").classList.remove("hidden");
     $("status-result").scrollIntoView({ block: "nearest" });
-    setLoading("btn-status", "spin-status", "label-status", false, "Memeriksa...");
+    setLoading("btn-status", "spin-status", "label-status", false, "Memeriksa status...");
 });

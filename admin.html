@@ -13,15 +13,15 @@
 
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
-    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+    <header class="bg-brand-900 text-white shadow-lg sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-3 py-2.5 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <div class="brand-mark">
-                    <img src="assets/logo-desa.png" alt="Logo Desa Jatimulyo" />
+                    <span aria-hidden="true">JM</span>
                 </div>
                 <div class="leading-tight">
                     <h1 class="text-base sm:text-lg font-bold">Dashboard Operator - Pelayanan Desa Jatimulyo</h1>
-                    <p class="text-xs text-blue-100">Khusus petugas Balai Desa</p>
+                    <p class="text-xs text-brand-100">Khusus Operator Balai Desa</p>
                 </div>
             </div>
 
@@ -34,11 +34,11 @@
                 </div>
 
                 <button id="btn-walkin" type="button"
-                    class="inline-flex items-center gap-2 bg-white text-blue-900 hover:bg-blue-100 px-3.5 py-2 text-sm font-semibold transition">
+                    class="inline-flex items-center gap-2 bg-white text-brand-900 hover:bg-brand-100 px-3.5 py-2 text-sm font-semibold transition">
                     + Pendaftaran Offline
                 </button>
 
-                <button id="btn-lock" type="button" title="Hapus kunci admin dari browser ini"
+                <button id="btn-lock" type="button" title="Hapus Kunci Operator dari browser ini"
                     class="bg-white/10 hover:bg-white/20 px-3 py-2 text-sm text-slate-200 transition">Kunci</button>
             </div>
         </div>
@@ -47,9 +47,9 @@
     <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-6 space-y-6">
 
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" aria-label="Ringkasan statistik">
-            <div class="stat-card ring-blue-200 border-blue-700">
+            <div class="stat-card ring-brand-200 border-brand-700">
                 <p>Datang Hari Ini</p>
-                <p id="stat-today" class="text-blue-900">-</p>
+                <p id="stat-today" class="text-brand-900">-</p>
                 <p>menunggu kedatangan di Balai Desa</p>
             </div>
             <div class="stat-card border-amber-400">
@@ -57,9 +57,9 @@
                 <p id="stat-total" class="text-slate-900">-</p>
                 <p>&nbsp;</p>
             </div>
-            <div class="stat-card border-blue-500">
+            <div class="stat-card border-brand-500">
                 <p>Sedang Diproses</p>
-                <p id="stat-proses" class="text-blue-700">-</p>
+                <p id="stat-proses" class="text-brand-700">-</p>
                 <p>dalam proses verifikasi</p>
             </div>
             <div class="stat-card border-green-500">
@@ -98,9 +98,9 @@
                     <select id="f-dusun"></select>
                 </div>
                 <div class="filter-field">
-                    <label for="f-jalur">Jalur</label>
+                    <label for="f-jalur">Jalur Pendaftaran</label>
                     <select id="f-jalur">
-                        <option value="">Semua Jalur</option>
+                        <option value="">Semua Jalur Pendaftaran</option>
                         <option value="online">Online</option>
                         <option value="offline">Offline</option>
                     </select>
@@ -118,7 +118,7 @@
                 <div class="filter-field filter-half">
                     <label for="f-sort">Urutkan</label>
                     <select id="f-sort">
-                        <option value="newest">Pendaftar terbaru</option>
+                        <option value="newest">Pendaftaran Terbaru</option>
                         <option value="date-asc">Tanggal datang terdekat</option>
                         <option value="date-desc">Tanggal datang terjauh</option>
                     </select>
@@ -129,58 +129,48 @@
             </div>
         </section>
 
-        <section class="bg-blue-50 shadow-sm ring-1 ring-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-sm">
-                    <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wide">
-                        <tr>
-                            <th>Tanggal Kedatangan</th>
-                            <th>Kode Tracking</th>
-                            <th>Jalur</th>
-                            <th>Nama Lengkap</th>
-                            <th>Nomor WhatsApp</th>
-                            <th>Jenis Layanan</th>
-                            <th>Status</th>
-                            <th>Catatan</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody" class="divide-y divide-slate-100"></tbody>
-                </table>
+        <section class="bg-brand-50 shadow-sm ring-1 ring-slate-200 p-3 sm:p-4">
+            <div id="cards" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[65vh] overflow-y-auto pr-1"></div>
+            <div id="cards-empty" class="hidden py-10 text-center text-slate-500">
+                <p id="cards-empty-text"></p>
             </div>
-            <template id="row-tpl">
-                <tr class="hover:bg-slate-50">
-                    <td class="px-4 py-3 whitespace-nowrap">
-                        <span data-f="tanggal" class="font-semibold"></span>
-                        <span data-f="hari-ini"
-                            class="hidden ml-1 bg-blue-600 px-1.5 py-0.5 text-[10px] font-bold text-white">HARI
-                            INI</span>
-                    </td>
-                    <td data-f="kode" class="px-4 py-3 font-mono text-xs font-semibold text-blue-700 whitespace-nowrap"></td>
-                    <td class="px-4 py-3"><span class="badge" data-f="jalur"></span></td>
-                    <td data-f="nama" class="px-4 py-3 font-semibold text-slate-900"></td>
-                    <td data-f="wa" class="px-4 py-3 whitespace-nowrap text-slate-600"></td>
-                    <td data-f="layanan" class="px-4 py-3 text-slate-700"></td>
-                    <td class="px-4 py-3"><span class="badge" data-f="status"></span></td>
-                    <td class="px-4 py-3 text-slate-600 max-w-[220px]"><span data-f="catatan"
-                            class="block truncate"></span></td>
-                    <td class="px-4 py-3 text-right">
-                        <button type="button" data-f="manage"
-                            class="btn-primary whitespace-nowrap text-xs px-3 py-1.5">Kelola</button>
-                    </td>
-                </tr>
+            <template id="card-tpl">
+                <article class="bg-white ring-1 ring-slate-200 p-4 shadow-sm flex flex-col gap-3">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <p data-f="nama" class="font-bold text-slate-900 truncate"></p>
+                            <p data-f="layanan" class="text-sm text-slate-600 mt-0.5"></p>
+                        </div>
+                        <span class="badge shrink-0" data-f="status"></span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        <div>
+                            <p class="text-xs text-slate-500">Tanggal Kedatangan</p>
+                            <p data-f="tanggal" class="font-semibold text-slate-800"></p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Kode Tracking</p>
+                            <p data-f="kode" class="font-mono font-bold text-brand-700"></p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Nomor WhatsApp</p>
+                            <p data-f="wa" class="font-medium text-slate-800"></p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Jalur</p>
+                            <span class="badge" data-f="jalur"></span>
+                        </div>
+                    </div>
+                    <p data-f="timestamp" class="text-xs text-slate-500"></p>
+                    <p data-f="catatan" class="hidden text-sm text-slate-600 border-t border-slate-100 pt-2 whitespace-pre-line"></p>
+                    <button type="button" data-f="manage" class="btn-secondary w-full py-2 text-sm">Kelola</button>
+                </article>
             </template>
-            <div id="table-empty" class="hidden py-14 text-center text-slate-500">
-                <p id="table-empty-text" class="font-semibold">Tidak ada data.</p>
-            </div>
-            <div
-                class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-slate-100 bg-slate-50">
-                <p id="pager-info" class="text-xs text-slate-500"></p>
-                <div class="flex items-center gap-2">
-                    <button id="pg-prev" type="button" class="btn-muted text-sm">&laquo;
-                        Sebelumnya</button>
-                    <button id="pg-next" type="button" class="btn-muted text-sm">Berikutnya
-                        &raquo;</button>
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-200 mt-4 pt-3">
+                <p id="pager-info" class="text-sm text-slate-600"></p>
+                <div class="flex gap-2">
+                    <button id="pg-prev" type="button" class="btn-muted text-sm">&laquo; Sebelumnya</button>
+                    <button id="pg-next" type="button" class="btn-muted text-sm">Berikutnya &raquo;</button>
                 </div>
             </div>
         </section>
@@ -190,18 +180,18 @@
 
     <div id="modal-key" class="hidden modal-backdrop z-50" role="dialog" aria-modal="true" aria-labelledby="key-title">
         <form id="form-key" class="modal-anim modal-panel max-w-sm p-6">
-            <div class="w-12 h-12 bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
+            <div class="w-12 h-12 bg-brand-100 text-brand-700 flex items-center justify-center mb-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
             </div>
-            <h2 id="key-title" class="modal-title">Kunci Admin</h2>
-            <p class="text-sm text-slate-600 mt-1">Masukkan kunci admin. Kunci hanya disimpan sementara di tab browser
+            <h2 id="key-title" class="modal-title">Kunci Operator</h2>
+            <p class="text-sm text-slate-600 mt-1">Masukkan Kunci Operator. Kunci hanya disimpan sementara di tab browser
                 ini.</p>
             <div class="field mt-4">
-                <input id="key-input" type="password" autocomplete="off" placeholder="Kunci admin" />
+                <input id="key-input" type="password" autocomplete="off" placeholder="Masukkan Kunci Operator" />
                 <p id="key-error" class="hidden alert-error mt-2" role="alert"></p>
             </div>
             <button id="key-submit" type="submit" disabled
@@ -215,7 +205,7 @@
             <div class="modal-head">
                 <div>
                     <h2 id="manage-title" class="modal-title">Kelola</h2>
-                    <p id="m-kode" class="font-mono text-sm text-blue-700 font-semibold"></p>
+                    <p id="m-kode" class="font-mono text-sm text-brand-700 font-semibold"></p>
                 </div>
                 <button id="m-close" type="button" class="icon-btn" aria-label="Tutup">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -226,7 +216,9 @@
             </div>
 
             <div class="px-6 py-5 space-y-5">
-                <dl class="detail-list grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                <section aria-labelledby="m-data-title">
+                    <h3 id="m-data-title" class="text-sm font-bold text-brand-900 mb-2">Data Pendaftar</h3>
+                    <dl class="detail-list grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm bg-slate-50 ring-1 ring-slate-200 p-4">
                     <div>
                         <dt>Nama Lengkap</dt>
                         <dd id="m-nama"></dd>
@@ -236,8 +228,15 @@
                         <dd class="flex items-center gap-2 flex-wrap">
                             <span id="m-wa"></span>
                             <a id="m-wa-link" href="#" target="_blank" rel="noopener noreferrer"
-                                class="hidden text-xs font-semibold text-green-700 bg-green-100 hover:bg-green-200 px-2 py-0.5">Buka
-                                WhatsApp</a>
+                                class="hidden inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-green-700 hover:bg-green-800 px-2.5 py-1.5 shadow-sm transition duration-200 hover:shadow-md" aria-label="Cek nomor di WhatsApp">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.5 8.5 0 0 1-12.5 7.5L3 21l2-5.5A8.5 8.5 0 1 1 21 11.5Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M8.5 8.5c.5 3 2 4.5 5 5"/></svg>
+                                <span>Cek WhatsApp</span>
+                            </a>
+                            <a id="m-call-link" href="#"
+                                class="hidden inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-brand-700 hover:bg-brand-800 px-2.5 py-1.5 shadow-sm transition duration-200 hover:shadow-md" aria-label="Telepon warga">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 0 1 2-2h3l2 5-2 2a16 16 0 0 0 6 6l2-2 5 2v3a2 2 0 0 1-2 2C10.2 21 3 13.8 3 5Z"/></svg>
+                                <span>Telepon</span>
+                            </a>
                         </dd>
                     </div>
                     <div>
@@ -249,7 +248,7 @@
                         <dd id="m-rt"></dd>
                     </div>
                     <div>
-                        <dt>Jalur</dt>
+                        <dt>Jalur Pendaftaran</dt>
                         <dd id="m-jalur" class="badge"></dd>
                     </div>
                     <div class="sm:col-span-2">
@@ -264,47 +263,47 @@
                         <dt>Waktu Mendaftar</dt>
                         <dd id="m-timestamp" class="font-normal text-slate-700"></dd>
                     </div>
-                </dl>
+                    </dl>
+                </section>
 
-                <div id="m-berkas" class="berkas-box">
+                <section aria-labelledby="m-berkas-title">
+                    <h3 id="m-berkas-title" class="text-sm font-bold text-brand-900 mb-2">Berkas yang Dibawa</h3>
+                    <div id="m-berkas" class="berkas-box">
                     <p class="berkas-title">Berkas fisik yang wajib dibawa</p>
-                </div>
+                    </div>
+                </section>
 
-                <div class="grid sm:grid-cols-2 gap-4">
-                    <div class="field">
-                        <label for="m-status">Ubah Status</label>
+                <section aria-labelledby="m-status-title" class="bg-slate-50 ring-1 ring-slate-200 p-4">
+                    <h3 id="m-status-title" class="text-sm font-bold text-brand-900 mb-3">Status Pelayanan</h3>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="field">
+                            <label for="m-status">Ubah Status</label>
                         <select id="m-status">
                             <option value="Diproses">Sedang Diproses</option>
                             <option value="Siap Diambil">Siap Diambil</option>
                             <option value="Selesai">Selesai</option>
                         </select>
                     </div>
-                    <div class="flex items-end">
-                        <p id="m-current-badge" class="text-sm text-slate-600">Status saat ini: <span
-                                class="badge"></span></p>
+                        <div class="flex items-end">
+                            <p id="m-current-badge" class="text-sm text-slate-600">Status saat ini: <span class="badge"></span></p>
+                        </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="field">
-                    <label for="m-catatan">Catatan Petugas</label>
+                <section aria-labelledby="m-catatan-title" class="field bg-slate-50 ring-1 ring-slate-200 p-4">
+                    <label id="m-catatan-title" for="m-catatan">Catatan Operator</label>
                     <textarea id="m-catatan" rows="3" maxlength="500" placeholder="Contoh berkas lengkap"></textarea>
                     <div id="m-chips" class="flex flex-wrap gap-2 mt-2">
-                        <button type="button" data-chip="Berkas yang diperlukan sudah lengkap" class="chip">Berkas yang
-                            diperlukan sudah lengkap</button>
-                        <button type="button" data-chip="Tidak ada fotokopi KTP" class="chip">Tidak ada fotokopi
-                            KTP</button>
-                        <button type="button" data-chip="Tidak ada fotokopi KK" class="chip">Tidak ada fotokopi
-                            KK</button>
-                        <button type="button" data-chip="Tidak ada surat pengantar RT/RW" class="chip">Tidak ada surat
-                            pengantar RT/RW</button>
-                        <button type="button" data-chip="Menunggu tanda tangan Kepala Desa" class="chip">Menunggu
-                            tanda tangan Kepala Desa</button>
-                        <button type="button" data-chip="Surat sudah ditandatangani Kepala Desa" class="chip">Surat
-                            sudah ditandatangani Kepala Desa</button>
-                        <button type="button" data-chip="Surat siap diambil di Balai Desa" class="chip">Surat siap
-                            diambil di Balai Desa</button>
+                        <button type="button" data-chip="Berkas sudah lengkap" class="chip">Berkas sudah lengkap</button>
+                        <button type="button" data-chip="Fotokopi KTP belum tersedia" class="chip">Fotokopi KTP belum tersedia</button>
+                        <button type="button" data-chip="Fotokopi KK belum tersedia" class="chip">Fotokopi KK belum tersedia</button>
+                        <button type="button" data-chip="Surat pengantar RT/RW belum tersedia" class="chip">Surat pengantar RT/RW belum tersedia</button>
+                        <button type="button" data-chip="Menunggu tanda tangan Kepala Desa" class="chip">Menunggu tanda tangan Kepala Desa</button>
+                        <button type="button" data-chip="Nomor WhatsApp tidak dapat dihubungi" class="chip">Nomor WhatsApp tidak dapat dihubungi</button>
+                        <button type="button" data-chip="Mohon lengkapi berkas di Balai Desa" class="chip">Mohon lengkapi berkas di Balai Desa</button>
+                        <button type="button" data-chip="Data perlu diperbaiki" class="chip">Data perlu diperbaiki</button>
                     </div>
-                </div>
+                </section>
 
                 <p id="m-error" class="hidden alert-error" role="alert"></p>
             </div>
@@ -347,6 +346,7 @@
                 </div>
 
                 <form id="form-walkin" novalidate class="px-6 py-5 space-y-4">
+                    <p class="text-sm text-slate-600"><span class="font-bold text-red-600">*</span> wajib diisi.</p>
                     <div class="field">
                         <label for="w-nama">Nama Lengkap <span class="text-red-500">*</span></label>
                         <input id="w-nama" type="text" maxlength="100" placeholder="Masukkan nama sesuai KTP" />
@@ -412,7 +412,7 @@
                                 <path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
                                 </path>
                             </svg>
-                            <span id="w-submit-label">Daftarkan dan Buat Kode</span>
+                            <span id="w-submit-label">Daftarkan dan Buat Kode Tracking</span>
                         </button>
                     </div>
                 </form>
@@ -421,14 +421,14 @@
             <div id="walkin-success-view" class="hidden">
                 <div class="success-head">
                     <h2>Pendaftaran Offline Berhasil!</h2>
-                    <p class="text-green-50 text-sm">Berikan kode ini kepada warga (tulis di kertas atau cetak bukti).
+                    <p class="text-green-50 text-sm">Berikan Kode Tracking kepada warga dengan menuliskannya atau mencetak bukti pendaftaran.
                     </p>
                 </div>
                 <div class="px-6 py-5 space-y-4">
                     <div class="code-card">
                         <p>Kode Tracking</p>
                         <p id="ws-kode"
-                            class="mt-1 font-mono text-3xl font-extrabold text-blue-900 tracking-wider break-all"></p>
+                            class="mt-1 font-mono text-3xl font-extrabold text-brand-900 tracking-wider break-all"></p>
                     </div>
                     <div class="kv-list">
                         <p><span>Nama Lengkap</span> <strong id="ws-nama"></strong></p>
@@ -473,7 +473,7 @@
                 <td>: <span id="ps-tanggal"></span></td>
             </tr>
         </table>
-        <p class="ps-note">Simpan kode ini untuk memantau status layanan melalui website ini.</p>
+        <p class="ps-note">Simpan Kode Tracking ini untuk memantau status layanan melalui website ini.</p>
     </div>
 
     <footer class="site-footer">
@@ -486,26 +486,25 @@
                     <p>Provinsi Lampung</p>
                 </div>
                 <div>
-                    <p class="footer-title">Alamat Balai Desa</p>
-                    <p>Isi alamat lengkap Balai Desa Jatimulyo di sini</p>
-                </div>
-                <div>
-                    <p class="footer-title">Kontak</p>
-                    <p>Isi nomor WhatsApp Balai Desa di sini</p>
-                    <p>Pelayanan Senin sampai Jumat</p>
+                    <p class="footer-title">Pelayanan</p>
+                    <p>Senin sampai Jumat</p>
                 </div>
             </div>
         </div>
     </footer>
 
     <div id="toast"
-        class="hidden reveal fixed bottom-5 right-5 z-[60] max-w-sm px-4 py-3 text-sm font-semibold text-white shadow-xl bg-slate-900"
+        class="hidden reveal fixed bottom-5 right-5 z-[60] max-w-sm px-3 py-2.5 text-sm font-semibold text-white shadow-xl bg-slate-900"
         role="status"></div>
 
+    <script src="scripts/config.js"></script>
     <script src="scripts/data.js"></script>
     <script src="scripts/date.js"></script>
-    <script src="scripts/ui.js"></script>
+    <script src="scripts/dom.js"></script>
+    <script src="scripts/forms.js"></script>
+    <script src="scripts/modal.js"></script>
     <script src="scripts/api.js"></script>
+    <script src="scripts/admin-table.js"></script>
     <script src="scripts/admin.js"></script>
     <script src="scripts/admin-manage.js"></script>
     <script src="scripts/admin-walkin.js"></script>
