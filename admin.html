@@ -1,353 +1,498 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self'; base-uri 'self'; object-src 'none'" />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="noindex, nofollow" />
-  <title>Dashboard Operator - Pelayanan Desa Jatimulyo</title>
-  <link rel="stylesheet" href="styles/styles.css" />
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self'; base-uri 'self'; object-src 'none'" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Dashboard Operator - Pelayanan Desa Jatimulyo</title>
+    <link rel="stylesheet" href="styles/styles.css" />
 </head>
+
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
-  <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-30">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="shrink-0 w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center ring-1 ring-white/30">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-        </div>
-        <div class="leading-tight">
-          <h1 class="text-base sm:text-lg font-bold">Dashboard Operator - Pelayanan Desa Jatimulyo</h1>
-          <p class="text-xs text-blue-100">Khusus petugas Balai Desa</p>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2">
-        <div class="flex items-center gap-2 rounded-lg bg-slate-800 px-3 py-2 text-xs">
-          <span id="conn-dot" class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
-          <span id="conn-text" class="text-slate-300">Belum terhubung</span>
-        </div>
-
-        <button id="btn-walkin" type="button"
-          class="inline-flex items-center gap-2 rounded-lg bg-white text-blue-900 hover:bg-blue-100 px-3.5 py-2 text-sm font-semibold transition">
-          + Pendaftaran Langsung
-        </button>
-
-        <button id="btn-lock" type="button" title="Hapus kunci admin dari browser ini"
-          class="rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm text-slate-200 transition">Kunci</button>
-      </div>
-    </div>
-  </header>
-
-  <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-6 space-y-6">
-
-    <section class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" aria-label="Ringkasan statistik">
-      <div class="bg-blue-50 rounded-xl p-4 shadow-sm ring-1 ring-slate-200 border-l-4 border-amber-400">
-        <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Total Pendaftar</p>
-        <p id="stat-total" class="text-3xl font-extrabold text-slate-900 mt-1">-</p>
-        <p id="stat-total-sub" class="text-xs text-slate-500 mt-1">&nbsp;</p>
-      </div>
-      <div class="bg-blue-50 rounded-xl p-4 shadow-sm ring-1 ring-slate-200 border-l-4 border-blue-500">
-        <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Sedang Diproses</p>
-        <p id="stat-proses" class="text-3xl font-extrabold text-blue-700 mt-1">-</p>
-        <p class="text-xs text-slate-500 mt-1">Menunggu atau dalam verifikasi</p>
-      </div>
-      <div class="bg-blue-50 rounded-xl p-4 shadow-sm ring-1 ring-slate-200 border-l-4 border-green-500">
-        <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Selesai</p>
-        <p id="stat-selesai" class="text-3xl font-extrabold text-green-700 mt-1">-</p>
-        <p class="text-xs text-slate-500 mt-1">&nbsp;</p>
-      </div>
-    </section>
-
-    <section class="bg-blue-50 rounded-xl shadow-sm ring-1 ring-slate-200 p-4">
-      <div class="grid md:grid-cols-12 gap-3">
-        <div class="md:col-span-5">
-          <label for="f-search" class="block text-xs font-semibold text-slate-600 mb-1">Pencarian cepat</label>
-          <input id="f-search" type="search" placeholder="Cari nama, kode tracking, atau no. WA..." autocomplete="off"
-            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" />
-        </div>
-        <div class="md:col-span-2">
-          <label for="f-status" class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
-          <select id="f-status" class="w-full rounded-lg border border-slate-300 bg-blue-50 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-            <option value="">Semua</option>
-            <option value="proses">Sedang Diproses</option>
-            <option value="Siap Diambil">Siap Diambil</option>
-            <option value="Selesai">Selesai</option>
-          </select>
-        </div>
-        <div class="md:col-span-2">
-          <label for="f-date" class="block text-xs font-semibold text-slate-600 mb-1">Tanggal kedatangan</label>
-          <select id="f-date" class="w-full rounded-lg border border-slate-300 bg-blue-50 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-            <option value="all">Semua Tanggal</option>
-            <option value="today">Hari Ini</option>
-          </select>
-        </div>
-        <div class="md:col-span-3">
-          <label for="f-sort" class="block text-xs font-semibold text-slate-600 mb-1">Urutkan</label>
-          <select id="f-sort" class="w-full rounded-lg border border-slate-300 bg-blue-50 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-            <option value="newest">Pendaftar terbaru</option>
-            <option value="date-asc">Tanggal datang terdekat</option>
-            <option value="date-desc">Tanggal datang terjauh</option>
-          </select>
-        </div>
-      </div>
-      <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
-        <p id="filter-info">-</p>
-      </div>
-    </section>
-
-    <section class="bg-blue-50 rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wide">
-            <tr>
-              <th class="px-4 py-3 text-left font-semibold whitespace-nowrap">Tanggal Datang</th>
-              <th class="px-4 py-3 text-left font-semibold whitespace-nowrap">Kode Tracking</th>
-              <th class="px-4 py-3 text-left font-semibold">Jalur</th>
-              <th class="px-4 py-3 text-left font-semibold">Nama Warga</th>
-              <th class="px-4 py-3 text-left font-semibold">No WA</th>
-              <th class="px-4 py-3 text-left font-semibold">Jenis Layanan</th>
-              <th class="px-4 py-3 text-left font-semibold">Status</th>
-              <th class="px-4 py-3 text-left font-semibold">Catatan</th>
-              <th class="px-4 py-3 text-right font-semibold">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="tbody" class="divide-y divide-slate-100"></tbody>
-        </table>
-      </div>
-      <div id="table-empty" class="hidden py-14 text-center text-slate-500">
-        <p id="table-empty-text" class="font-semibold">Tidak ada data.</p>
-      </div>
-      <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-slate-100 bg-slate-50">
-        <p id="pager-info" class="text-xs text-slate-500"></p>
-        <div class="flex items-center gap-2">
-          <button id="pg-prev" type="button" class="rounded-lg border border-slate-300 bg-blue-50 px-3 py-1.5 text-sm font-semibold hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed">&laquo; Sebelumnya</button>
-          <button id="pg-next" type="button" class="rounded-lg border border-slate-300 bg-blue-50 px-3 py-1.5 text-sm font-semibold hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed">Berikutnya &raquo;</button>
-        </div>
-      </div>
-    </section>
-
-    <p id="error-banner" class="hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert"></p>
-  </main>
-
-  <div id="modal-key" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-900/70" role="dialog" aria-modal="true" aria-labelledby="key-title">
-    <form id="form-key" class="modal-anim bg-blue-50 w-full max-w-sm rounded-2xl shadow-2xl p-6">
-      <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-        </svg>
-      </div>
-      <h2 id="key-title" class="text-lg font-bold text-blue-900">Kunci Admin</h2>
-      <p class="text-sm text-slate-600 mt-1">Masukkan kunci admin. Kunci hanya disimpan sementara di tab browser ini.</p>
-      <input id="key-input" type="password" autocomplete="off" placeholder="Kunci admin"
-        class="mt-4 w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" />
-      <p id="key-error" class="hidden mt-2 text-sm text-red-600" role="alert"></p>
-      <button id="key-submit" type="submit" disabled class="mt-4 w-full rounded-lg bg-blue-700 hover:brightness-125 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-2.5 transition">Masuk</button>
-    </form>
-  </div>
-
-  <div id="modal-manage" class="hidden fixed inset-0 z-40 items-center justify-center p-4 bg-slate-900/70" role="dialog" aria-modal="true" aria-labelledby="manage-title">
-    <div class="modal-anim bg-blue-50 w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl">
-      <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-slate-200 sticky top-0 bg-blue-50 rounded-t-2xl">
-        <div>
-          <h2 id="manage-title" class="text-lg font-bold text-blue-900">Kelola / Verifikasi Pendaftaran</h2>
-          <p id="m-kode" class="font-mono text-sm text-blue-700 font-semibold"></p>
-        </div>
-        <button id="m-close" type="button" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed" aria-label="Tutup">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-        </button>
-      </div>
-
-      <div class="px-6 py-5 space-y-5">
-        <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-          <div><dt class="text-xs uppercase text-slate-500 font-semibold">Nama</dt><dd id="m-nama" class="font-semibold text-slate-900"></dd></div>
-          <div>
-            <dt class="text-xs uppercase text-slate-500 font-semibold">No. WhatsApp</dt>
-            <dd class="flex items-center gap-2 flex-wrap">
-              <span id="m-wa" class="font-semibold text-slate-900"></span>
-              <a id="m-wa-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-xs font-semibold text-green-700 bg-green-100 hover:bg-green-200 rounded px-2 py-0.5">Buka WhatsApp</a>
-            </dd>
-          </div>
-          <div><dt class="text-xs uppercase text-slate-500 font-semibold">Dusun</dt><dd id="m-dusun" class="font-semibold text-slate-900"></dd></div>
-          <div><dt class="text-xs uppercase text-slate-500 font-semibold">Jalur</dt><dd id="m-jalur"></dd></div>
-          <div class="sm:col-span-2"><dt class="text-xs uppercase text-slate-500 font-semibold">Jenis Layanan</dt><dd id="m-layanan" class="font-semibold text-slate-900"></dd></div>
-          <div><dt class="text-xs uppercase text-slate-500 font-semibold">Tanggal Rencana Datang</dt><dd id="m-tanggal" class="font-semibold text-slate-900"></dd></div>
-          <div><dt class="text-xs uppercase text-slate-500 font-semibold">Waktu Mendaftar</dt><dd id="m-timestamp" class="text-slate-700"></dd></div>
-        </dl>
-
-        <div class="rounded-xl border-l-4 border-amber-400 bg-amber-50 ring-1 ring-amber-200 p-4">
-          <p class="text-sm font-bold text-amber-900 mb-2">Berkas fisik yang wajib dibawa warga</p>
-          <ul id="m-berkas" class="list-disc list-inside text-sm text-amber-950 space-y-1"></ul>
-        </div>
-
-        <div class="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label for="m-status" class="block text-sm font-semibold text-slate-700 mb-1">Ubah Status</label>
-            <select id="m-status" class="w-full rounded-lg border border-slate-300 bg-blue-50 px-3 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-              <option value="Diproses">Sedang Diproses</option>
-              <option value="Siap Diambil">Siap Diambil</option>
-              <option value="Selesai">Selesai</option>
-            </select>
-            <p class="text-xs text-slate-500 mt-1">Alur: Sedang Diproses &rarr; Siap Diambil &rarr; Selesai</p>
-          </div>
-          <div class="flex items-end">
-            <p id="m-current-badge" class="text-sm text-slate-600"></p>
-          </div>
-        </div>
-
-        <div>
-          <label for="m-catatan" class="block text-sm font-semibold text-slate-700 mb-1">Catatan Petugas</label>
-          <textarea id="m-catatan" rows="3" maxlength="500" placeholder="Contoh: Berkas lengkap"
-            class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"></textarea>
-          <div id="m-chips" class="flex flex-wrap gap-2 mt-2"></div>
-          <p class="text-xs text-slate-500 mt-1">Catatan ini dapat dilihat warga melalui menu Cek Status.</p>
-        </div>
-
-        <p id="m-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert"></p>
-      </div>
-
-      <div class="px-6 py-4 border-t border-slate-200 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 bg-slate-50 rounded-b-2xl">
-        <button id="m-cancel" type="button" class="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-2.5 transition disabled:opacity-40 disabled:cursor-not-allowed">Batal</button>
-        <button id="m-save" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-700 hover:brightness-125 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 transition">
-          <svg id="m-spin" class="hidden animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
-          <span id="m-save-label">Simpan Perubahan</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div id="modal-walkin" class="hidden fixed inset-0 z-40 items-center justify-center p-4 bg-slate-900/70" role="dialog" aria-modal="true" aria-labelledby="walkin-title">
-    <div class="modal-anim bg-blue-50 w-full max-w-xl max-h-[92vh] overflow-y-auto rounded-2xl shadow-2xl">
-
-      <div id="walkin-form-view">
-        <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-slate-200 sticky top-0 bg-blue-50 rounded-t-2xl">
-          <div>
-            <h2 id="walkin-title" class="text-lg font-bold text-blue-900">Pendaftaran Langsung</h2>
-            <p class="text-xs text-slate-500">Untuk warga yang datang langsung ke Balai Desa tanpa mendaftar online.</p>
-          </div>
-          <button id="w-close" type="button" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed" aria-label="Tutup">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-        </div>
-
-        <form id="form-walkin" novalidate class="px-6 py-5 space-y-4">
-          <div>
-            <label for="w-nama" class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
-            <input id="w-nama" type="text" maxlength="100" placeholder="Sesuai KTP"
-              class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" />
-            <p class="w-err text-xs text-red-600 mt-1 hidden" data-for="w-nama"></p>
-          </div>
-
-          <div class="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label for="w-wa" class="block text-sm font-semibold text-slate-700 mb-1">No. WhatsApp <span class="text-slate-400 font-normal">(opsional)</span></label>
-              <input id="w-wa" type="tel" inputmode="tel" maxlength="16" placeholder="08xxxxxxxxxx"
-                class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" />
-              <p class="w-err text-xs text-red-600 mt-1 hidden" data-for="w-wa"></p>
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="brand-mark">
+                    <img src="assets/logo-desa.png" alt="Logo Desa Jatimulyo" />
+                </div>
+                <div class="leading-tight">
+                    <h1 class="text-base sm:text-lg font-bold">Dashboard Operator - Pelayanan Desa Jatimulyo</h1>
+                    <p class="text-xs text-blue-100">Khusus petugas Balai Desa</p>
+                </div>
             </div>
-            <div>
-              <label for="w-dusun" class="block text-sm font-semibold text-slate-700 mb-1">Dusun / RT <span class="text-red-500">*</span></label>
-              <select id="w-dusun" class="w-full rounded-lg border border-slate-300 bg-blue-50 px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-                <option value="">-- Pilih Dusun --</option>
-              </select>
-              <p class="w-err text-xs text-red-600 mt-1 hidden" data-for="w-dusun"></p>
+
+            <div class="flex flex-wrap items-center gap-2">
+                <div id="conn" data-state="idle" class="flex items-center gap-2 px-3 py-2 text-xs">
+                    <span class="conn-swap">
+                        <span id="conn-state">Belum terhubung</span>
+                        <span id="conn-time"></span>
+                    </span>
+                </div>
+
+                <button id="btn-walkin" type="button"
+                    class="inline-flex items-center gap-2 bg-white text-blue-900 hover:bg-blue-100 px-3.5 py-2 text-sm font-semibold transition">
+                    + Pendaftaran Offline
+                </button>
+
+                <button id="btn-lock" type="button" title="Hapus kunci admin dari browser ini"
+                    class="bg-white/10 hover:bg-white/20 px-3 py-2 text-sm text-slate-200 transition">Kunci</button>
             </div>
-          </div>
+        </div>
+    </header>
 
-          <div>
-            <label for="w-layanan" class="block text-sm font-semibold text-slate-700 mb-1">Jenis Layanan <span class="text-red-500">*</span></label>
-            <select id="w-layanan" class="w-full rounded-lg border border-slate-300 bg-blue-50 px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-              <option value="">-- Pilih Jenis Layanan --</option>
-            </select>
-            <p class="w-err text-xs text-red-600 mt-1 hidden" data-for="w-layanan"></p>
-          </div>
+    <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-          <div id="w-berkas-box" class="hidden rounded-xl border-l-4 border-amber-400 bg-amber-50 ring-1 ring-amber-200 p-4">
-            <p class="text-sm font-bold text-amber-900 mb-2">Berkas fisik yang harus diperiksa:</p>
-            <ul id="w-berkas" class="list-disc list-inside text-sm text-amber-900 space-y-1"></ul>
-          </div>
-
-          <div class="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label for="w-tanggal" class="block text-sm font-semibold text-slate-700 mb-1">Tanggal Datang <span class="text-red-500">*</span></label>
-              <input id="w-tanggal" type="date"
-                class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" />
-              <p id="w-tanggal-terpilih" class="hidden mt-1 text-sm font-semibold text-blue-700"></p>
-              <p class="w-err text-xs text-red-600 mt-1 hidden" data-for="w-tanggal"></p>
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" aria-label="Ringkasan statistik">
+            <div class="stat-card ring-blue-200 border-blue-700">
+                <p>Datang Hari Ini</p>
+                <p id="stat-today" class="text-blue-900">-</p>
+                <p>menunggu kedatangan di Balai Desa</p>
             </div>
-            <div>
-              <label for="w-catatan" class="block text-sm font-semibold text-slate-700 mb-1">Catatan <span class="text-slate-400 font-normal">(opsional)</span></label>
-              <input id="w-catatan" type="text" maxlength="300" placeholder="Misal: berkas sudah lengkap"
-                class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" />
+            <div class="stat-card border-amber-400">
+                <p>Total Pendaftar</p>
+                <p id="stat-total" class="text-slate-900">-</p>
+                <p>&nbsp;</p>
             </div>
-          </div>
+            <div class="stat-card border-blue-500">
+                <p>Sedang Diproses</p>
+                <p id="stat-proses" class="text-blue-700">-</p>
+                <p>dalam proses verifikasi</p>
+            </div>
+            <div class="stat-card border-green-500">
+                <p>Selesai</p>
+                <p id="stat-selesai" class="text-green-700">-</p>
+                <p>&nbsp;</p>
+            </div>
+        </section>
 
-          <p id="w-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert"></p>
+        <section class="filter-panel">
+            <div class="filter-head">
+                <p class="filter-title">Filter Data</p>
+                <button id="f-reset" type="button" class="btn-muted">Hapus Filter</button>
+            </div>
+            <div class="filter-grid">
+                <div class="filter-field filter-wide">
+                    <label for="f-search">Pencarian cepat</label>
+                    <input id="f-search" type="search" placeholder="Cari nama, kode, atau nomor WhatsApp..."
+                        autocomplete="off" />
+                </div>
+                <div class="filter-field">
+                    <label for="f-status">Status</label>
+                    <select id="f-status">
+                        <option value="">Semua Status</option>
+                        <option value="proses">Sedang Diproses</option>
+                        <option value="Siap Diambil">Siap Diambil</option>
+                        <option value="Selesai">Selesai</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="f-layanan">Jenis Layanan</label>
+                    <select id="f-layanan"></select>
+                </div>
+                <div class="filter-field">
+                    <label for="f-dusun">Dusun</label>
+                    <select id="f-dusun"></select>
+                </div>
+                <div class="filter-field">
+                    <label for="f-jalur">Jalur</label>
+                    <select id="f-jalur">
+                        <option value="">Semua Jalur</option>
+                        <option value="online">Online</option>
+                        <option value="offline">Offline</option>
+                    </select>
+                </div>
+                <div class="filter-field filter-half">
+                    <label for="f-date">Tanggal Kedatangan</label>
+                    <select id="f-date">
+                        <option value="all">Semua Tanggal</option>
+                        <option value="today">Hari Ini</option>
+                        <option value="besok">Besok</option>
+                        <option value="pekan">Pekan Ini</option>
+                        <option value="lewat">Lewat Jadwal</option>
+                    </select>
+                </div>
+                <div class="filter-field filter-half">
+                    <label for="f-sort">Urutkan</label>
+                    <select id="f-sort">
+                        <option value="newest">Pendaftar terbaru</option>
+                        <option value="date-asc">Tanggal datang terdekat</option>
+                        <option value="date-desc">Tanggal datang terjauh</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-foot">
+                <p id="filter-info">-</p>
+            </div>
+        </section>
 
-          <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
-            <button id="w-cancel" type="button" class="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-2.5 transition disabled:opacity-40 disabled:cursor-not-allowed">Batal</button>
-            <button id="w-submit" type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-700 hover:brightness-125 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 transition">
-              <svg id="w-spin" class="hidden animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
-              <span id="w-submit-label">Daftarkan &amp; Buat Kode</span>
-            </button>
-          </div>
+        <section class="bg-blue-50 shadow-sm ring-1 ring-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wide">
+                        <tr>
+                            <th>Tanggal Kedatangan</th>
+                            <th>Kode Tracking</th>
+                            <th>Jalur</th>
+                            <th>Nama Lengkap</th>
+                            <th>Nomor WhatsApp</th>
+                            <th>Jenis Layanan</th>
+                            <th>Status</th>
+                            <th>Catatan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <template id="row-tpl">
+                <tr class="hover:bg-slate-50">
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <span data-f="tanggal" class="font-semibold"></span>
+                        <span data-f="hari-ini"
+                            class="hidden ml-1 bg-blue-600 px-1.5 py-0.5 text-[10px] font-bold text-white">HARI
+                            INI</span>
+                    </td>
+                    <td data-f="kode" class="px-4 py-3 font-mono text-xs font-semibold text-blue-700 whitespace-nowrap"></td>
+                    <td class="px-4 py-3"><span class="badge" data-f="jalur"></span></td>
+                    <td data-f="nama" class="px-4 py-3 font-semibold text-slate-900"></td>
+                    <td data-f="wa" class="px-4 py-3 whitespace-nowrap text-slate-600"></td>
+                    <td data-f="layanan" class="px-4 py-3 text-slate-700"></td>
+                    <td class="px-4 py-3"><span class="badge" data-f="status"></span></td>
+                    <td class="px-4 py-3 text-slate-600 max-w-[220px]"><span data-f="catatan"
+                            class="block truncate"></span></td>
+                    <td class="px-4 py-3 text-right">
+                        <button type="button" data-f="manage"
+                            class="btn-primary whitespace-nowrap text-xs px-3 py-1.5">Kelola</button>
+                    </td>
+                </tr>
+            </template>
+            <div id="table-empty" class="hidden py-14 text-center text-slate-500">
+                <p id="table-empty-text" class="font-semibold">Tidak ada data.</p>
+            </div>
+            <div
+                class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-slate-100 bg-slate-50">
+                <p id="pager-info" class="text-xs text-slate-500"></p>
+                <div class="flex items-center gap-2">
+                    <button id="pg-prev" type="button" class="btn-muted text-sm">&laquo;
+                        Sebelumnya</button>
+                    <button id="pg-next" type="button" class="btn-muted text-sm">Berikutnya
+                        &raquo;</button>
+                </div>
+            </div>
+        </section>
+
+        <p id="error-banner" class="hidden alert-error" role="alert"></p>
+    </main>
+
+    <div id="modal-key" class="hidden modal-backdrop z-50" role="dialog" aria-modal="true" aria-labelledby="key-title">
+        <form id="form-key" class="modal-anim modal-panel max-w-sm p-6">
+            <div class="w-12 h-12 bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                </svg>
+            </div>
+            <h2 id="key-title" class="modal-title">Kunci Admin</h2>
+            <p class="text-sm text-slate-600 mt-1">Masukkan kunci admin. Kunci hanya disimpan sementara di tab browser
+                ini.</p>
+            <div class="field mt-4">
+                <input id="key-input" type="password" autocomplete="off" placeholder="Kunci admin" />
+                <p id="key-error" class="hidden alert-error mt-2" role="alert"></p>
+            </div>
+            <button id="key-submit" type="submit" disabled
+                class="btn-primary w-full mt-4 py-2.5">Masuk</button>
         </form>
-      </div>
+    </div>
 
-      <div id="walkin-success-view" class="hidden">
-        <div class="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-6 py-5 rounded-t-2xl text-center">
-          <h2 class="text-xl font-bold">Pendaftaran Langsung Berhasil!</h2>
-          <p class="text-green-50 text-sm">Berikan kode ini kepada warga (tulis di kertas atau cetak slip).</p>
+    <div id="modal-manage" class="hidden modal-backdrop z-40" role="dialog" aria-modal="true"
+        aria-labelledby="manage-title">
+        <div class="modal-anim modal-panel max-w-2xl max-h-[92vh] overflow-y-auto">
+            <div class="modal-head">
+                <div>
+                    <h2 id="manage-title" class="modal-title">Kelola</h2>
+                    <p id="m-kode" class="font-mono text-sm text-blue-700 font-semibold"></p>
+                </div>
+                <button id="m-close" type="button" class="icon-btn" aria-label="Tutup">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="px-6 py-5 space-y-5">
+                <dl class="detail-list grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                    <div>
+                        <dt>Nama Lengkap</dt>
+                        <dd id="m-nama"></dd>
+                    </div>
+                    <div>
+                        <dt>Nomor WhatsApp</dt>
+                        <dd class="flex items-center gap-2 flex-wrap">
+                            <span id="m-wa"></span>
+                            <a id="m-wa-link" href="#" target="_blank" rel="noopener noreferrer"
+                                class="hidden text-xs font-semibold text-green-700 bg-green-100 hover:bg-green-200 px-2 py-0.5">Buka
+                                WhatsApp</a>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Dusun</dt>
+                        <dd id="m-dusun"></dd>
+                    </div>
+                    <div>
+                        <dt>RT</dt>
+                        <dd id="m-rt"></dd>
+                    </div>
+                    <div>
+                        <dt>Jalur</dt>
+                        <dd id="m-jalur" class="badge"></dd>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <dt>Jenis Layanan</dt>
+                        <dd id="m-layanan"></dd>
+                    </div>
+                    <div>
+                        <dt>Tanggal Kedatangan</dt>
+                        <dd id="m-tanggal"></dd>
+                    </div>
+                    <div>
+                        <dt>Waktu Mendaftar</dt>
+                        <dd id="m-timestamp" class="font-normal text-slate-700"></dd>
+                    </div>
+                </dl>
+
+                <div id="m-berkas" class="berkas-box">
+                    <p class="berkas-title">Berkas fisik yang wajib dibawa</p>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="field">
+                        <label for="m-status">Ubah Status</label>
+                        <select id="m-status">
+                            <option value="Diproses">Sedang Diproses</option>
+                            <option value="Siap Diambil">Siap Diambil</option>
+                            <option value="Selesai">Selesai</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <p id="m-current-badge" class="text-sm text-slate-600">Status saat ini <span
+                                class="badge"></span></p>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="m-catatan">Catatan Petugas</label>
+                    <textarea id="m-catatan" rows="3" maxlength="500" placeholder="Contoh berkas lengkap"></textarea>
+                    <div id="m-chips" class="flex flex-wrap gap-2 mt-2">
+                        <button type="button" data-chip="Berkas yang diperlukan sudah lengkap" class="chip">Berkas yang
+                            diperlukan sudah lengkap</button>
+                        <button type="button" data-chip="Tidak ada fotokopi KTP" class="chip">Tidak ada fotokopi
+                            KTP</button>
+                        <button type="button" data-chip="Tidak ada fotokopi KK" class="chip">Tidak ada fotokopi
+                            KK</button>
+                        <button type="button" data-chip="Tidak ada surat pengantar RT/RW" class="chip">Tidak ada surat
+                            pengantar RT/RW</button>
+                        <button type="button" data-chip="Menunggu tanda tangan Kepala Desa" class="chip">Menunggu
+                            tanda tangan Kepala Desa</button>
+                        <button type="button" data-chip="Surat sudah ditandatangani Kepala Desa" class="chip">Surat
+                            sudah ditandatangani Kepala Desa</button>
+                        <button type="button" data-chip="Surat siap diambil di Balai Desa" class="chip">Surat siap
+                            diambil di Balai Desa</button>
+                    </div>
+                </div>
+
+                <p id="m-error" class="hidden alert-error" role="alert"></p>
+            </div>
+
+            <div
+                class="px-6 py-4 border-t border-slate-200 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 bg-slate-50 ">
+                <button id="m-cancel" type="button"
+                    class="btn-secondary px-5 py-2.5">Batal</button>
+                <button id="m-save" type="button"
+                    class="btn-primary px-5 py-2.5">
+                    <svg id="m-spin" class="spin hidden" viewBox="0 0 24 24" fill="none"
+                        aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                    <span id="m-save-label">Simpan Perubahan</span>
+                </button>
+            </div>
         </div>
-        <div class="px-6 py-5 space-y-4">
-          <div class="rounded-xl bg-slate-50 ring-1 ring-slate-200 p-4 text-center">
-            <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Kode Tracking</p>
-            <p id="ws-kode" class="mt-1 font-mono text-3xl font-extrabold text-blue-900 tracking-wider break-all"></p>
-          </div>
-          <div class="text-sm text-slate-700 space-y-1">
-            <p><span class="text-slate-500">Nama:</span> <strong id="ws-nama"></strong></p>
-            <p><span class="text-slate-500">Layanan:</span> <strong id="ws-layanan"></strong></p>
-            <p><span class="text-slate-500">Tanggal:</span> <strong id="ws-tanggal"></strong></p>
-          </div>
-          <div class="flex flex-col sm:flex-row gap-3">
-            <button id="ws-print" type="button" class="flex-1 rounded-lg bg-blue-700 hover:brightness-125 text-white font-semibold px-4 py-2.5 transition">Cetak Slip</button>
-            <button id="ws-another" type="button" class="flex-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 transition">Isi Data Warga Lain</button>
-            <button id="ws-done" type="button" class="flex-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 transition">Selesai</button>
-          </div>
+    </div>
+
+    <div id="modal-walkin" class="hidden modal-backdrop z-40" role="dialog" aria-modal="true"
+        aria-labelledby="walkin-title">
+        <div class="modal-anim modal-panel max-w-xl max-h-[92vh] overflow-y-auto">
+
+            <div id="walkin-form-view">
+                <div class="modal-head">
+                    <div>
+                        <h2 id="walkin-title" class="modal-title">Pendaftaran Offline</h2>
+                        <p class="text-xs text-slate-500">Untuk warga yang datang langsung ke Balai Desa tanpa mendaftar
+                            online.</p>
+                    </div>
+                    <button id="w-close" type="button" class="icon-btn" aria-label="Tutup">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form id="form-walkin" novalidate class="px-6 py-5 space-y-4">
+                    <div class="field">
+                        <label for="w-nama">Nama Lengkap <span class="text-red-500">*</span></label>
+                        <input id="w-nama" type="text" maxlength="100" placeholder="Sesuai KTP" />
+                        <p class="hidden" data-err data-for="w-nama"></p>
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="field">
+                            <label for="w-wa">Nomor WhatsApp <span class="text-slate-400 font-normal">(opsional)</span></label>
+                            <input id="w-wa" type="tel" inputmode="tel" maxlength="16" placeholder="Contoh: 08xxxxxxxxxx" />
+                            <p class="hidden" data-err data-for="w-wa"></p>
+                        </div>
+                        <div class="field">
+                            <label for="w-dusun">Dusun <span class="text-red-500">*</span></label>
+                            <select id="w-dusun"></select>
+                            <p class="hidden" data-err data-for="w-dusun"></p>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="w-rt">RT <span class="text-red-500">*</span></label>
+                        <input id="w-rt" type="text" inputmode="numeric" maxlength="3" autocomplete="off"
+                            placeholder="Contoh: 003" />
+                        <p class="hidden" data-err data-for="w-rt"></p>
+                    </div>
+
+                    <div class="field">
+                        <label for="w-layanan">Jenis Layanan <span class="text-red-500">*</span></label>
+                        <select id="w-layanan"></select>
+                        <p class="hidden" data-err data-for="w-layanan"></p>
+                    </div>
+
+                    <div id="w-berkas-box" class="hidden berkas-box reveal">
+                        <p class="berkas-title">Berkas fisik yang wajib dibawa</p>
+                    </div>
+
+                    <div class="field relative">
+                        <label id="label-w-tanggal" for="w-tanggal">Tanggal Kedatangan <span
+                                class="text-red-500">*</span></label>
+                        <button id="w-tanggal-btn" type="button" aria-labelledby="label-w-tanggal">
+                            <span class="text-slate-400">Pilih tanggal</span>
+                        </button>
+                        <input id="w-tanggal" type="hidden" value="" />
+                        <p class="hidden" data-err data-for="w-tanggal"></p>
+                    </div>
+
+                    <div class="field">
+                        <label for="w-catatan">Catatan <span class="text-slate-400 font-normal">(opsional)</span></label>
+                        <input id="w-catatan" type="text" maxlength="300" placeholder="Misal berkas sudah lengkap" />
+                    </div>
+
+                    <p id="w-error" class="hidden alert-error" role="alert"></p>
+
+                    <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
+                        <button id="w-cancel" type="button"
+                            class="btn-secondary px-5 py-2.5">Batal</button>
+                        <button id="w-submit" type="submit"
+                            class="btn-primary px-5 py-2.5">
+                            <svg id="w-spin" class="spin hidden" viewBox="0 0 24 24" fill="none"
+                                aria-hidden="true">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                                </path>
+                            </svg>
+                            <span id="w-submit-label">Daftarkan &amp; Buat Kode</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="walkin-success-view" class="hidden">
+                <div class="success-head">
+                    <h2>Pendaftaran Offline Berhasil!</h2>
+                    <p class="text-green-50 text-sm">Berikan kode ini kepada warga (tulis di kertas atau cetak slip).
+                    </p>
+                </div>
+                <div class="px-6 py-5 space-y-4">
+                    <div class="code-card">
+                        <p>Kode Tracking</p>
+                        <p id="ws-kode"
+                            class="mt-1 font-mono text-3xl font-extrabold text-blue-900 tracking-wider break-all"></p>
+                    </div>
+                    <div class="kv-list">
+                        <p><span>Nama Lengkap:</span> <strong id="ws-nama"></strong></p>
+                        <p><span>Layanan:</span> <strong id="ws-layanan"></strong></p>
+                        <p><span>Tanggal Kedatangan:</span> <strong id="ws-tanggal"></strong></p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button id="ws-print" type="button"
+                            class="btn-primary flex-1 px-4 py-2.5">Cetak
+                            Slip</button>
+                        <button id="ws-another" type="button"
+                            class="btn-secondary flex-1 px-4 py-2.5">Isi
+                            Data Warga Lain</button>
+                        <button id="ws-done" type="button"
+                            class="btn-secondary flex-1 px-4 py-2.5">Selesai</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <div id="print-slip">
-    <div class="ps-head">
-      <div class="ps-small">PEMERINTAH DESA JATIMULYO</div>
-      <div class="ps-title">BUKTI PENDAFTARAN LAYANAN</div>
+    <div id="print-slip">
+        <div class="ps-head">
+            <div class="ps-small">PEMERINTAH DESA JATIMULYO</div>
+            <div class="ps-title">BUKTI PENDAFTARAN LAYANAN</div>
+        </div>
+        <div class="ps-code-block">
+            <div class="ps-small">Kode Tracking</div>
+            <div id="ps-kode" class="ps-code"></div>
+        </div>
+        <table class="ps-table">
+            <tr>
+                <td class="ps-col">Nama Lengkap</td>
+                <td>: <span id="ps-nama"></span></td>
+            </tr>
+            <tr>
+                <td>Layanan</td>
+                <td>: <span id="ps-layanan"></span></td>
+            </tr>
+            <tr>
+                <td>Tanggal Kedatangan</td>
+                <td>: <span id="ps-tanggal"></span></td>
+            </tr>
+        </table>
+        <p class="ps-note">Simpan kode ini untuk memantau status layanan melalui website ini.</p>
     </div>
-    <div class="ps-code-block">
-      <div class="ps-small">Kode Tracking</div>
-      <div id="ps-kode" class="ps-code"></div>
-    </div>
-    <table class="ps-table">
-      <tr><td class="ps-col">Nama</td><td>: <span id="ps-nama"></span></td></tr>
-      <tr><td>Layanan</td><td>: <span id="ps-layanan"></span></td></tr>
-      <tr><td>Tanggal</td><td>: <span id="ps-tanggal"></span></td></tr>
-    </table>
-    <p class="ps-note">Simpan kode ini untuk memantau status layanan melalui website Pelayanan Desa Jatimulyo.</p>
-  </div>
 
-  <footer class="bg-blue-900 text-blue-100 text-sm">
-    <div class="max-w-7xl mx-auto px-4 py-5 text-center">
-      <p class="font-semibold">Pemerintah Desa Jatimulyo, Provinsi Lampung</p>
-      <p class="text-blue-200 text-xs mt-1">Daftar dari rumah, verifikasi berkas fisik di Balai Desa.</p>
-    </div>
-  </footer>
+    <footer class="bg-blue-900 text-blue-100 text-sm">
+        <div class="max-w-7xl mx-auto px-4 py-5 text-center">
+            <p class="font-semibold">Pemerintah Desa Jatimulyo, Provinsi Lampung</p>
+        </div>
+    </footer>
 
-  <div id="toast" class="hidden fixed bottom-5 right-5 z-[60] max-w-sm rounded-lg px-4 py-3 text-sm font-semibold text-white shadow-xl" role="status"></div>
+    <div id="toast"
+        class="hidden reveal fixed bottom-5 right-5 z-[60] max-w-sm px-4 py-3 text-sm font-semibold text-white shadow-xl bg-slate-900"
+        role="status"></div>
 
-  <script src="scripts/data.js"></script>
-  <script src="scripts/admin.js"></script>
+    <script src="scripts/data.js"></script>
+    <script src="scripts/date.js"></script>
+    <script src="scripts/ui.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/admin.js"></script>
+    <script src="scripts/admin-manage.js"></script>
+    <script src="scripts/admin-walkin.js"></script>
 </body>
+
 </html>

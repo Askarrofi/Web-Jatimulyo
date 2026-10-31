@@ -1,529 +1,234 @@
-    const PAGE_SIZE = 20;
+const PAGE_SIZE = 25;
+const SORTS = {
+    "newest": (a, b) => String(b.timestamp).localeCompare(String(a.timestamp)),
+    "date-asc": (a, b) => String(a.tanggalDatang).localeCompare(String(b.tanggalDatang)) || String(a.nama).localeCompare(String(b.nama)),
+    "date-desc": (a, b) => String(b.tanggalDatang).localeCompare(String(a.tanggalDatang)) || String(b.nama).localeCompare(String(a.nama))
+};
 
-    const CATATAN_CEPAT = [
-      "Berkas lengkap",
-      "Kurang fotokopi KTP",
-      "Kurang fotokopi KK",
-      "Kurang surat pengantar RT",
-      "Menunggu tanda tangan Kades",
-      "Surat sudah ditandatangani Kades",
-      "Surat siap diambil di Balai Desa"
-    ];
+let rows = [];
+let view = [];
+let page = 1;
+let refreshTimer = null;
 
-    function formatTanggalPendek(ymd) {
-      const d = parseYmd(ymd);
-      if (!d) return ymd || "-";
-      return `${d.getDate()} ${BULAN_PENDEK[d.getMonth()]} ${d.getFullYear()}`;
+function showError(message) {
+    const el = $("error-banner");
+    if (message) {
+        el.textContent = message;
+        el.classList.remove("hidden");
+    } else {
+        el.textContent = "";
+        el.classList.add("hidden");
     }
+}
 
-    function formatTimestampPanjang(ts) {
-      const m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.exec(String(ts));
-      return `${Number(m[3])} ${BULAN_PENDEK[Number(m[2]) - 1]} ${m[1]}, ${m[4]}.${m[5]}.${m[6]} WIB`;
-    }
+function toast(message) {
+    const el = $("toast");
+    el.textContent = message;
+    el.classList.remove("hidden");
+    el.classList.add("reveal");
+    setTimeout(() => {
+        el.classList.add("hidden");
+        el.classList.remove("reveal");
+    }, 2200);
+}
 
-    function waLink(noWa) {
-      let n = normalizePhone(noWa).replace(/^\+/, "");
-      if (!/^\d{9,15}$/.test(n)) return "";
-      if (n.startsWith("0")) n = "62" + n.slice(1);
-      return "https://wa.me/" + n;
-    }
+function setConnState(state, text) {
+    const el = $("conn");
+    el.dataset.state = state;
+    $("conn-state").textContent = text;
+    $("conn-time").textContent = state === "online" ? " - " + new Date().toLocaleTimeString("id-ID") : "";
+}
 
-    let toastTimer = null;
-    function toast(message, type) {
-      const el = $("toast");
-      el.textContent = message;
-      el.className = "fixed bottom-5 right-5 z-[60] max-w-sm rounded-lg px-4 py-3 text-sm font-semibold text-white shadow-xl " +
-        (type === "error" ? "bg-red-600" : "bg-slate-900");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.add("hidden"), 3500);
-    }
+function renderStats() {
+    const today = todayYmd();
+    const key = (s) => String(s || "").trim().toLowerCase();
+    $("stat-today").textContent = rows.filter((r) => r.tanggalDatang === today && key(r.statusPelayanan) !== "selesai").length;
+    $("stat-total").textContent = rows.length;
+    $("stat-proses").textContent = rows.filter((r) => key(r.statusPelayanan) !== "selesai").length;
+    $("stat-selesai").textContent = rows.filter((r) => key(r.statusPelayanan) === "selesai").length;
+}
 
-    function openModal(id) {
-      const el = $(id);
-      el.classList.remove("hidden");
-      el.classList.add("flex");
-    }
-    function closeModalById(id) {
-      const el = $(id);
-      el.classList.add("hidden");
-      el.classList.remove("flex");
-    }
-
-    function statusBadgeHtml(status) {
-      const s = STATUS_STYLE[String(status || "").trim().toLowerCase()] ||
-        { cls: "bg-slate-100 text-slate-700 ring-1 ring-slate-300", label: status || "-" };
-      return `<span class="inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-bold ${s.cls}">${escapeHtml(s.label)}</span>`;
-    }
-
-    function jalurBadgeHtml(jalur) {
-      const offline = String(jalur || "").toLowerCase() === "offline";
-      const cls = offline ? "bg-slate-100 text-slate-800 ring-1 ring-slate-300" : "bg-sky-100 text-sky-800 ring-1 ring-sky-300";
-      return `<span class="inline-block rounded-full px-2.5 py-0.5 text-xs font-bold ${cls}">${offline ? "Offline" : "Online"}</span>`;
-    }
-
-    function setConn(state, text) {
-      const dot = $("conn-dot");
-      const colors = { idle: "bg-slate-500", loading: "bg-amber-400 animate-pulse", ok: "bg-green-400", error: "bg-red-500" };
-      dot.className = "w-2.5 h-2.5 rounded-full " + (colors[state] || colors.idle);
-      $("conn-text").textContent = text;
-    }
-
-    let allData = [];
-    let filtered = [];
-    let page = 1;
-    let loadPromise = null;
-    let selectedCode = null;
-    let saving = false;
-
-    function showBanner(msg) {
-      const el = $("error-banner");
-      if (msg) { el.textContent = msg; el.classList.remove("hidden"); }
-      else { el.textContent = ""; el.classList.add("hidden"); }
-    }
-
-    async function loadData(silent) {
-      if (!getKey()) { openKeyModal(""); return; }
-      const prev = loadPromise;
-      const run = (async () => {
-        if (prev) await prev;
-        setConn("loading", "Memuat data...");
-        if (!silent) showBanner("");
-        try {
-          const res = await callApi({ action: "getAllData" });
-          if (!Array.isArray(res.data)) throw new ApiError("Format data dari server tidak sesuai.");
-          allData = res.data;
-          const t = new Date();
-          setConn("ok", "Terhubung - " + String(t.getHours()).padStart(2, "0") + ":" + String(t.getMinutes()).padStart(2, "0") + ":" + String(t.getSeconds()).padStart(2, "0"));
-          showBanner("");
-          applyFilters(false);
-        } catch (err) {
-          setConn("error", "Gagal terhubung");
-          if (err.code === "UNAUTHORIZED") {
-            clearKey();
-            openKeyModal(err.message);
-          } else {
-            showBanner(err.message);
-          }
-        } finally {
-          if (loadPromise === run) loadPromise = null;
+function matches(r, q, status, layanan, dusun, jalur, dateMode) {
+    if (status) {
+        if (status === "proses") {
+            if (String(r.statusPelayanan || "").trim().toLowerCase() === "selesai") return false;
+        } else if (String(r.statusPelayanan || "").trim().toLowerCase() !== status.toLowerCase()) {
+            return false;
         }
-      })();
-      loadPromise = run;
-      await run;
     }
-
-    function renderStats() {
-      const today = todayYmd();
-      let proses = 0, siap = 0, selesai = 0, hariIni = 0;
-      allData.forEach((r) => {
-        const s = String(r.statusPelayanan || "").trim().toLowerCase();
-        if (s === "pending" || s === "diproses") proses++;
-        else if (s === "siap diambil") siap++;
-        else if (s === "selesai") selesai++;
-        if (r.tanggalDatang === today) hariIni++;
-      });
-      $("stat-total").textContent = allData.length;
-      $("stat-total-sub").textContent = hariIni + " dijadwalkan datang hari ini";
-      $("stat-proses").textContent = proses;
-      $("stat-selesai").textContent = siap + selesai;
+    if (layanan && String(r.jenisLayanan || "") !== layanan) return false;
+    if (dusun && String(r.dusun || "") !== dusun) return false;
+    if (jalur && String(r.jalur || "").trim().toLowerCase() !== jalur) return false;
+    if (dateMode === "today" && r.tanggalDatang !== todayYmd()) return false;
+    if (dateMode === "besok") {
+        const d = parseYmd(todayYmd());
+        d.setDate(d.getDate() + 1);
+        if (r.tanggalDatang !== ymdFrom(d)) return false;
     }
-
-    function applyFilters(resetPage) {
-      const q = $("f-search").value.trim().toLowerCase();
-      const qDigits = q.replace(/\D/g, "");
-      const status = $("f-status").value.toLowerCase();
-      const dateMode = $("f-date").value;
-      const sort = $("f-sort").value;
-      const today = todayYmd();
-
-      filtered = allData.filter((r) => {
-        if (status) {
-          const s = String(r.statusPelayanan || "").trim().toLowerCase();
-          const match = status === "proses" ? s === "pending" || s === "diproses" : s === status;
-          if (!match) return false;
-        }
-        if (dateMode === "today" && r.tanggalDatang !== today) return false;
-        if (q) {
-          const hay = (String(r.nama) + " " + String(r.trackingCode)).toLowerCase();
-          const waMatch = qDigits.length >= 3 && String(r.noWa).replace(/\D/g, "").includes(qDigits);
-          if (!hay.includes(q) && !waMatch) return false;
-        }
-        return true;
-      });
-
-      filtered.sort((a, b) => {
-        if (sort === "date-asc") return String(a.tanggalDatang).localeCompare(String(b.tanggalDatang)) || String(b.timestamp).localeCompare(String(a.timestamp));
-        if (sort === "date-desc") return String(b.tanggalDatang).localeCompare(String(a.tanggalDatang)) || String(b.timestamp).localeCompare(String(a.timestamp));
-        return String(b.timestamp).localeCompare(String(a.timestamp));
-      });
-
-      if (resetPage !== false) page = 1;
-      const maxPage = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-      if (page > maxPage) page = maxPage;
-
-      renderStats();
-      renderTable();
+    if (dateMode === "pekan") {
+        const start = todayYmd();
+        const end = parseYmd(start);
+        end.setDate(end.getDate() + 6);
+        if (r.tanggalDatang < start || r.tanggalDatang > ymdFrom(end)) return false;
     }
-
-    function renderTable() {
-      const start = (page - 1) * PAGE_SIZE;
-      const rows = filtered.slice(start, start + PAGE_SIZE);
-      const today = todayYmd();
-
-      $("tbody").innerHTML = rows.map((r) => {
-        const isToday = r.tanggalDatang === today;
-        const catatan = String(r.catatan || "");
-        return `
-          <tr class="hover:bg-slate-50 ${isToday ? "bg-blue-50/40" : ""}">
-            <td class="px-4 py-3 whitespace-nowrap">
-              <span class="font-semibold">${escapeHtml(formatTanggalPendek(r.tanggalDatang))}</span>
-              ${isToday ? '<span class="ml-1 rounded bg-blue-600 px-1.5 py-0.5 text-[10px] font-bold text-white">HARI INI</span>' : ""}
-            </td>
-            <td class="px-4 py-3 font-mono text-xs font-semibold text-blue-700 whitespace-nowrap">${escapeHtml(r.trackingCode)}</td>
-            <td class="px-4 py-3">${jalurBadgeHtml(r.jalur)}</td>
-            <td class="px-4 py-3 font-semibold text-slate-900">${escapeHtml(r.nama)}</td>
-            <td class="px-4 py-3 whitespace-nowrap text-slate-600">${escapeHtml(r.noWa) || "-"}</td>
-            <td class="px-4 py-3 text-slate-700">${escapeHtml(r.jenisLayanan)}</td>
-            <td class="px-4 py-3">${statusBadgeHtml(r.statusPelayanan)}</td>
-            <td class="px-4 py-3 text-slate-600 max-w-[220px]"><span class="block truncate" title="${escapeHtml(catatan)}">${escapeHtml(catatan) || "-"}</span></td>
-            <td class="px-4 py-3 text-right">
-              <button type="button" data-code="${escapeHtml(r.trackingCode)}" class="btn-manage whitespace-nowrap rounded-lg bg-blue-700 hover:brightness-125 text-white text-xs font-semibold px-3 py-1.5 transition">Kelola / Verifikasi</button>
-            </td>
-          </tr>`;
-      }).join("");
-
-      const empty = filtered.length === 0;
-      $("table-empty").classList.toggle("hidden", !empty);
-      if (empty) {
-        $("table-empty-text").textContent = allData.length === 0 ? "Belum ada data pendaftar." : "Tidak ada data yang cocok dengan filter.";
-      }
-
-      const total = filtered.length;
-      const from = total === 0 ? 0 : start + 1;
-      const to = Math.min(start + PAGE_SIZE, total);
-      $("pager-info").textContent = `Menampilkan ${from}-${to} dari ${total} data (halaman ${page} dari ${Math.max(1, Math.ceil(total / PAGE_SIZE))})`;
-      $("filter-info").textContent = `${total} dari ${allData.length} pendaftar sesuai filter`;
-      $("pg-prev").disabled = page <= 1;
-      $("pg-next").disabled = start + PAGE_SIZE >= total;
+    if (dateMode === "lewat" && !(r.tanggalDatang < todayYmd())) return false;
+    if (q) {
+        const needle = q.toLowerCase();
+        const hay = [r.nama, r.trackingCode, r.noWa, r.jenisLayanan, r.dusun, r.rt, r.catatan].join(" ").toLowerCase();
+        if (!hay.includes(needle)) return false;
     }
+    return true;
+}
 
-    $("tbody").addEventListener("click", (e) => {
-      const btn = e.target.closest(".btn-manage");
-      if (btn) openManage(btn.dataset.code);
-    });
-    $("pg-prev").addEventListener("click", () => { if (page > 1) { page--; renderTable(); window.scrollTo({ top: 0 }); } });
-    $("pg-next").addEventListener("click", () => { page++; renderTable(); window.scrollTo({ top: 0 }); });
+function applyFilters() {
+    const q = $("f-search").value.trim().toLowerCase();
+    const status = $("f-status").value;
+    const layanan = $("f-layanan").value;
+    const dusun = $("f-dusun").value;
+    const jalur = $("f-jalur").value;
+    const dateMode = $("f-date").value;
+    const sortKey = $("f-sort").value;
 
-    let searchTimer = null;
-    $("f-search").addEventListener("input", () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => applyFilters(true), 180); });
-    ["f-status", "f-date", "f-sort"].forEach((id) => $(id).addEventListener("change", () => applyFilters(true)));
+    view = rows.filter((r) => matches(r, q, status, layanan, dusun, jalur, dateMode));
+    view.sort(SORTS[sortKey] || SORTS.newest);
+    page = Math.min(page, Math.max(1, Math.ceil(view.length / PAGE_SIZE)));
+    renderTable();
+}
 
-    function openKeyModal(errorMsg) {
-      const err = $("key-error");
-      if (errorMsg) { err.textContent = errorMsg; err.classList.remove("hidden"); }
-      else { err.textContent = ""; err.classList.add("hidden"); }
-      $("key-input").value = "";
-      $("key-submit").disabled = true;
-      openModal("modal-key");
-      setTimeout(() => $("key-input").focus(), 50);
-    }
+function renderTable() {
+    const tbody = $("tbody");
+    tbody.textContent = "";
+    const start = (page - 1) * PAGE_SIZE;
+    const slice = view.slice(start, start + PAGE_SIZE);
+    const today = todayYmd();
 
-    $("key-input").addEventListener("input", () => {
-      $("key-submit").disabled = !$("key-input").value.trim();
+    slice.forEach((r) => {
+        const tr = $("row-tpl").content.firstElementChild.cloneNode(true);
+        tr.querySelector('[data-f="tanggal"]').textContent = formatTanggalDmy(r.tanggalDatang);
+        tr.querySelector('[data-f="hari-ini"]').classList.toggle("hidden", r.tanggalDatang !== today);
+        tr.querySelector('[data-f="kode"]').textContent = String(r.trackingCode || "").slice(-4).toUpperCase();
+        const jalur = tr.querySelector('[data-f="jalur"]');
+        jalur.dataset.jalur = String(r.jalur || "").toLowerCase();
+        jalur.textContent = r.jalur || "-";
+        tr.querySelector('[data-f="nama"]').textContent = r.nama || "-";
+        tr.querySelector('[data-f="wa"]').textContent = r.noWa || "-";
+        tr.querySelector('[data-f="layanan"]').textContent = r.jenisLayanan || "-";
+        const status = tr.querySelector('[data-f="status"]');
+        const style = getStatusStyle(r.statusPelayanan);
+        status.dataset.status = style.key;
+        status.textContent = style.label;
+        tr.querySelector('[data-f="catatan"]').textContent = r.catatan || "";
+        tr.querySelector('[data-f="manage"]').addEventListener("click", () => openManage(r));
+        tbody.appendChild(tr);
     });
 
-    $("form-key").addEventListener("submit", (e) => {
-      e.preventDefault();
-      setKey($("key-input").value.trim());
-      closeModalById("modal-key");
-      loadData(false);
-    });
+    const kosong = view.length === 0;
+    $("table-empty").classList.toggle("hidden", !kosong);
+    $("table-empty-text").textContent = rows.length === 0 ? "Belum ada pendaftaran." : "Tidak ada data yang cocok dengan filter.";
+    $("pager-info").textContent = kosong ? "" : "Baris " + (start + 1) + "-" + Math.min(start + PAGE_SIZE, view.length) + " dari " + view.length;
+    $("filter-info").textContent = rows.length === 0 ? "Belum ada data." : "Menampilkan " + view.length + " dari " + rows.length + " pendaftar";
+    $("pg-prev").disabled = page <= 1;
+    $("pg-next").disabled = page >= Math.ceil(view.length / PAGE_SIZE);
+}
 
-    $("btn-lock").addEventListener("click", () => {
-      clearKey();
-      allData = [];
-      applyFilters(true);
-      setConn("idle", "Terkunci");
-      openKeyModal("");
-    });
+$("btn-lock").addEventListener("click", () => {
+    clearKey();
+    rows = [];
+    view = [];
+    $("tbody").textContent = "";
+    renderStats();
+    setConnState("idle", "Belum terhubung");
+    $("modal-key").classList.remove("hidden");
+    $("modal-key").classList.add("flex");
+    $("key-input").value = "";
+    $("key-input").focus();
+});
 
-    function openManage(code) {
-      const r = allData.find((x) => x.trackingCode === code);
-      if (!r) return;
-      selectedCode = code;
+$("key-input").addEventListener("input", () => {
+    $("key-submit").disabled = $("key-input").value.trim().length < 6;
+});
 
-      $("m-kode").textContent = r.trackingCode;
-      $("m-nama").textContent = r.nama;
-      $("m-wa").textContent = r.noWa || "-";
-      const link = waLink(r.noWa);
-      const a = $("m-wa-link");
-      if (link) { a.href = link; a.classList.remove("hidden"); } else { a.classList.add("hidden"); a.removeAttribute("href"); }
-      $("m-dusun").textContent = r.dusun || "-";
-      $("m-jalur").innerHTML = jalurBadgeHtml(r.jalur);
-      $("m-layanan").textContent = r.jenisLayanan;
-      $("m-tanggal").textContent = formatTanggalPanjang(r.tanggalDatang);
-      $("m-timestamp").textContent = r.timestamp ? formatTimestampPanjang(r.timestamp) : "-";
-      $("m-current-badge").innerHTML = "Status saat ini: " + statusBadgeHtml(r.statusPelayanan);
+function applyKey(k) {
+    setKey(k);
+    $("modal-key").classList.add("hidden");
+    $("modal-key").classList.remove("flex");
+    load(true);
+}
 
-      const layanan = findLayanan(r.jenisLayanan);
-      $("m-berkas").innerHTML = layanan
-        ? layanan.syarat.map((s) => `<li>${escapeHtml(s)}</li>`).join("")
-        : '<li class="text-sm text-amber-900">Daftar syarat tidak tersedia untuk layanan ini.</li>';
+$("form-key").addEventListener("submit", (e) => {
+    e.preventDefault();
+    applyKey($("key-input").value.trim());
+});
 
-      const sel = $("m-status");
-      Array.from(sel.querySelectorAll("option[data-extra]")).forEach((o) => o.remove());
-      const current = r.statusPelayanan === "Pending" ? "Diproses" : r.statusPelayanan;
-      const known = Array.from(sel.options).map((o) => o.value);
-      if (!known.includes(current)) {
-        const o = document.createElement("option");
-        o.value = current; o.textContent = current; o.dataset.extra = "1";
-        sel.appendChild(o);
-      }
-      sel.value = current;
+$("modal-key").addEventListener("click", (e) => { if (e.target === $("modal-key")) applyKey($("key-input").value.trim()); });
 
-      $("m-catatan").value = r.catatan || "";
-      $("m-chips").innerHTML = CATATAN_CEPAT.map((c) =>
-        `<button type="button" data-chip="${escapeHtml(c)}" class="chip rounded-full bg-slate-100 hover:bg-blue-100 hover:text-blue-700 text-slate-600 text-xs font-semibold px-3 py-1 transition">${escapeHtml(c)}</button>`
-      ).join("");
+function scheduleRefresh(delay) {
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(() => load(), delay);
+}
 
-      $("m-error").classList.add("hidden");
-      setSaving(false);
-      openModal("modal-manage");
-    }
-
-    function closeManage() { if (saving) return; closeModalById("modal-manage"); selectedCode = null; }
-
-    function setSaving(on) {
-      saving = on;
-      $("m-save").disabled = on;
-      $("m-close").disabled = on;
-      $("m-cancel").disabled = on;
-      $("m-spin").classList.toggle("hidden", !on);
-      $("m-save-label").textContent = on ? "Menyimpan..." : "Simpan Perubahan";
-    }
-
-    $("m-chips").addEventListener("click", (e) => {
-      const chip = e.target.closest(".chip");
-      if (!chip) return;
-      $("m-catatan").value = chip.dataset.chip;
-      $("m-catatan").focus();
-    });
-
-    $("m-close").addEventListener("click", closeManage);
-    $("m-cancel").addEventListener("click", closeManage);
-
-    $("m-save").addEventListener("click", async () => {
-      if (!selectedCode || saving) return;
-      const newStatus = $("m-status").value;
-      const catatan = $("m-catatan").value.trim();
-      $("m-error").classList.add("hidden");
-      setSaving(true);
-      if (loadPromise) await loadPromise;
-
-      let res;
-      try {
-        res = await callApi({ action: "updateStatus", trackingCode: selectedCode, newStatus: newStatus, catatan: catatan });
-      } catch (err) {
-        setSaving(false);
-        if (err.code === "UNAUTHORIZED") {
-          clearKey();
-          closeManage();
-          openKeyModal(err.message);
-        } else {
-          $("m-error").textContent = err.message;
-          $("m-error").classList.remove("hidden");
-        }
+async function load(showSpinner) {
+    if (!getKey()) {
+        $("modal-key").classList.remove("hidden");
+        $("modal-key").classList.add("flex");
+        $("key-input").focus();
         return;
-      }
-      const row = allData.find((x) => x.trackingCode === selectedCode);
-      if (row) {
-        row.statusPelayanan = res.statusPelayanan || newStatus;
-        row.catatan = typeof res.catatan === "string" ? res.catatan : catatan;
-      }
-      const code = selectedCode;
-      applyFilters(false);
-      setSaving(false);
-      closeManage();
-      const st = STATUS_STYLE[String(newStatus).trim().toLowerCase()] || { label: newStatus };
-      toast("Status " + code + " diperbarui menjadi \"" + st.label + "\".");
+    }
+
+    if (showSpinner) setConnState("loading", "Memuat data...");
+    showError("");
+
+    try {
+        const data = await callApi({ action: "getAllData" });
+        rows = Array.isArray(data.data) ? data.data : [];
+        renderStats();
+        applyFilters();
+        setConnState("ok", "Online");
+        scheduleRefresh(300000);
+    } catch (err) {
+        setConnState("error", "Gagal terhubung");
+        showError(err.message + " Klik tombol Kunci lalu masukkan kunci untuk mencoba lagi.");
+    }
+}
+
+["f-search", "f-status", "f-layanan", "f-dusun", "f-jalur", "f-date", "f-sort"].forEach((id) => {
+    $(id).addEventListener("input", () => {
+        page = 1;
+        applyFilters();
     });
+});
 
-    let lastWalkin = null;
-    let walkinSaving = false;
+$("f-reset").addEventListener("click", () => {
+    $("f-search").value = "";
+    $("f-status").value = "";
+    $("f-layanan").value = "";
+    $("f-dusun").value = "";
+    $("f-jalur").value = "";
+    $("f-date").value = "all";
+    $("f-sort").value = "newest";
+    page = 1;
+    applyFilters();
+});
 
-    function initWalkinForm() {
-      const dusunSel = $("w-dusun");
-      DUSUN.forEach((d) => {
-        const o = document.createElement("option");
-        o.value = d; o.textContent = d;
-        dusunSel.appendChild(o);
-      });
-
-      const sel = $("w-layanan");
-      LAYANAN.forEach((l) => {
-        const o = document.createElement("option");
-        o.value = l.nama; o.textContent = l.nama;
-        sel.appendChild(o);
-      });
+$("pg-prev").addEventListener("click", () => {
+    if (page > 1) {
+        page--;
+        renderTable();
     }
+});
 
-    function walkinError(field, message) {
-      const el = document.querySelector(`.w-err[data-for="${field}"]`);
-      const input = $(field);
-      if (message) { el.textContent = message; el.classList.remove("hidden"); input.classList.add("border-red-400"); }
-      else { el.textContent = ""; el.classList.add("hidden"); input.classList.remove("border-red-400"); }
+$("pg-next").addEventListener("click", () => {
+    if (page < Math.ceil(view.length / PAGE_SIZE)) {
+        page++;
+        renderTable();
     }
+});
 
-    function syncWTanggal() {
-      const el = $("w-tanggal");
-      const d = parseYmd(el.value);
-      if (el.value && HARI_TANPA_PELAYANAN.includes(d.getDay())) {
-        el.value = "";
-        walkinError("w-tanggal", "Balai Desa tidak melayani pada hari " + HARI[d.getDay()] + ". Pilih hari lain.");
-      } else {
-        walkinError("w-tanggal", "");
-      }
-      const out = $("w-tanggal-terpilih");
-      if (el.value) {
-        out.textContent = formatTanggalPanjang(el.value);
-        out.classList.remove("hidden");
-      } else {
-        out.textContent = "";
-        out.classList.add("hidden");
-      }
-    }
-
-    function resetWalkin() {
-      $("form-walkin").reset();
-      $("w-tanggal").value = todayYmd();
-      $("w-tanggal").min = todayYmd();
-      $("w-berkas-box").classList.add("hidden");
-      $("w-error").classList.add("hidden");
-      ["w-nama", "w-wa", "w-dusun", "w-layanan", "w-tanggal"].forEach((f) => walkinError(f, ""));
-      syncWTanggal();
-      setWalkinLoading(false);
-      $("walkin-form-view").classList.remove("hidden");
-      $("walkin-success-view").classList.add("hidden");
-    }
-
-    function openWalkin() {
-      if (!getKey()) { openKeyModal(""); return; }
-      resetWalkin();
-      openModal("modal-walkin");
-      setTimeout(() => $("w-nama").focus(), 50);
-    }
-
-    function closeWalkin() { if (walkinSaving) return; closeModalById("modal-walkin"); }
-
-    function setWalkinLoading(on) {
-      walkinSaving = on;
-      $("w-submit").disabled = on;
-      $("w-close").disabled = on;
-      $("w-cancel").disabled = on;
-      $("w-spin").classList.toggle("hidden", !on);
-      $("w-submit-label").textContent = on ? "Menyimpan..." : "Daftarkan & Buat Kode";
-    }
-
-    $("btn-walkin").addEventListener("click", openWalkin);
-    $("w-close").addEventListener("click", closeWalkin);
-    $("w-cancel").addEventListener("click", closeWalkin);
-    $("w-tanggal").addEventListener("change", syncWTanggal);
-
-    $("w-layanan").addEventListener("change", () => {
-      const l = findLayanan($("w-layanan").value);
-      if (!l) { $("w-berkas-box").classList.add("hidden"); return; }
-      $("w-berkas").innerHTML = l.syarat.map((s) => `<li>${escapeHtml(s)}</li>`).join("");
-      $("w-berkas-box").classList.remove("hidden");
-    });
-
-    function validateWalkin() {
-      let ok = true;
-      const nama = $("w-nama").value.trim();
-      const wa = normalizePhone($("w-wa").value);
-      if (nama.length < 3) { walkinError("w-nama", "Nama lengkap minimal 3 karakter."); ok = false; } else walkinError("w-nama", "");
-      if (wa && !WA_REGEX.test(wa)) { walkinError("w-wa", "Nomor WA tidak valid. Kosongkan bila warga tidak punya."); ok = false; } else walkinError("w-wa", "");
-      if (!$("w-dusun").value) { walkinError("w-dusun", "Pilih dusun."); ok = false; } else walkinError("w-dusun", "");
-      if (!$("w-layanan").value) { walkinError("w-layanan", "Pilih jenis layanan."); ok = false; } else walkinError("w-layanan", "");
-      const tgl = $("w-tanggal").value;
-      if (!tgl) { walkinError("w-tanggal", "Pilih tanggal."); ok = false; }
-      else if (tgl < todayYmd()) { walkinError("w-tanggal", "Tanggal tidak boleh sebelum hari ini."); ok = false; }
-      else if (HARI_TANPA_PELAYANAN.includes(parseYmd(tgl).getDay())) { walkinError("w-tanggal", "Balai Desa tidak melayani pada hari " + HARI[parseYmd(tgl).getDay()] + ". Pilih hari lain."); ok = false; }
-      else walkinError("w-tanggal", "");
-      return ok;
-    }
-
-    $("form-walkin").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      $("w-error").classList.add("hidden");
-      if (!validateWalkin()) return;
-
-      const payload = {
-        action: "register",
-        jalur: "Offline",
-        nama: $("w-nama").value.trim(),
-        noWa: normalizePhone($("w-wa").value),
-        dusun: $("w-dusun").value,
-        jenisLayanan: $("w-layanan").value,
-        tanggalDatang: $("w-tanggal").value,
-        catatan: $("w-catatan").value.trim()
-      };
-
-      setWalkinLoading(true);
-      let res;
-      try {
-        res = await callApi(payload);
-        if (!res.trackingCode) throw new ApiError("Server tidak mengembalikan kode tracking.");
-      } catch (err) {
-        setWalkinLoading(false);
-        if (err.code === "UNAUTHORIZED") {
-          clearKey();
-          closeWalkin();
-          openKeyModal(err.message);
-        } else {
-          $("w-error").textContent = err.message;
-          $("w-error").classList.remove("hidden");
-        }
-        return;
-      }
-      lastWalkin = { kode: res.trackingCode, nama: payload.nama, layanan: payload.jenisLayanan, tanggal: payload.tanggalDatang };
-
-      $("ws-kode").textContent = lastWalkin.kode;
-      $("ws-nama").textContent = lastWalkin.nama;
-      $("ws-layanan").textContent = lastWalkin.layanan;
-      $("ws-tanggal").textContent = formatTanggalPanjang(lastWalkin.tanggal);
-
-      $("walkin-form-view").classList.add("hidden");
-      $("walkin-success-view").classList.remove("hidden");
-      setWalkinLoading(false);
-      await loadData(true);
-    });
-
-    $("ws-another").addEventListener("click", resetWalkin);
-    $("ws-done").addEventListener("click", closeWalkin);
-    $("ws-print").addEventListener("click", () => {
-      if (!lastWalkin) return;
-      $("ps-kode").textContent = lastWalkin.kode;
-      $("ps-nama").textContent = lastWalkin.nama;
-      $("ps-layanan").textContent = lastWalkin.layanan;
-      $("ps-tanggal").textContent = formatTanggalPanjang(lastWalkin.tanggal);
-      window.print();
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape") return;
-      if (!$("modal-manage").classList.contains("hidden")) closeManage();
-      else if (!$("modal-walkin").classList.contains("hidden")) closeWalkin();
-    });
-
-    (function init() {
-      initWalkinForm();
-      $("w-tanggal").value = todayYmd();
-      applyFilters(true);
-
-      if (!getKey()) {
-        setConn("idle", "Menunggu kunci admin");
-        openKeyModal("");
-      } else {
-        loadData(false);
-      }
-    })();
+(function init() {
+    fillDusunSelect($("f-dusun"));
+    fillLayananSelect($("f-layanan"));
+    $("f-dusun").querySelector("option").textContent = "Semua Dusun";
+    $("f-layanan").querySelector("option").textContent = "Semua Layanan";
+    renderStats();
+    load(true);
+})();
