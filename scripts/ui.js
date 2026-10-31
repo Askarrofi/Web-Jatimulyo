@@ -52,7 +52,7 @@ function berkasList(l) {
     if (l.catatan) {
         const note = document.createElement("p");
         note.className = "mt-3 text-xs";
-        note.textContent = "Catatan. " + l.catatan;
+        note.textContent = "Catatan: " + l.catatan;
         wrap.appendChild(note);
     }
     return wrap;
@@ -97,7 +97,7 @@ function fillInfoAccordion(container) {
         if (l.catatan) {
             const note = document.createElement("p");
             note.className = "mt-3 text-xs bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2";
-            note.textContent = "Catatan. " + l.catatan;
+            note.textContent = "Catatan: " + l.catatan;
             body.appendChild(note);
         }
         d.appendChild(body);

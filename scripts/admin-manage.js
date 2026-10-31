@@ -15,7 +15,7 @@ let current = null;
 
 function openManage(r) {
     current = r;
-    $("m-kode").textContent = "Kode. " + String(r.trackingCode || "").slice(-4).toUpperCase();
+    $("m-kode").textContent = "Kode Tracking: " + String(r.trackingCode || "").slice(-4).toUpperCase();
     $("m-nama").textContent = r.nama || "-";
     $("m-wa").textContent = r.noWa || "-";
     $("m-wa-link").classList.toggle("hidden", !r.noWa);

@@ -17,12 +17,12 @@ const DUSUN_GROUP = [
 const LAYANAN = [
     {
         nama: "Surat Keterangan Usaha (SKU)",
-        desc: "Untuk bukti bahwa warga memiliki usaha di wilayah desa seperti pengajuan pinjaman, izin, dan sebagainya.",
+        desc: "Sebagai bukti bahwa warga memiliki usaha di wilayah desa untuk keperluan pengajuan pinjaman, perizinan, dan keperluan lainnya.",
         berkas: [
             "Fotokopi KTP pemilik usaha",
             "Fotokopi Kartu Keluarga (KK)",
             "Surat Pengantar dari RT/RW setempat",
-            "Keterangan usaha seperti nama usaha, jenis usaha, dan alamat tempat usaha",
+            "Keterangan usaha yang mencantumkan nama, jenis, dan alamat usaha",
             "Foto tempat usaha",
             "Pas foto 3x4"
         ]
@@ -34,18 +34,18 @@ const LAYANAN = [
             "Fotokopi KTP pemohon",
             "Fotokopi Kartu Keluarga (KK)",
             "Surat Pengantar dari RT/RW setempat",
-            "Keterangan tujuan penggunaan surat (seperti sekolah, kesehatan, atau lainnya)",
-            "Dokumen pendukung tujuan, misalnya surat dari sekolah/fasilitas kesehatan (jika ada)"
+            "Keterangan tujuan penggunaan surat, seperti untuk pendidikan, kesehatan, atau keperluan lainnya",
+            "Dokumen pendukung sesuai tujuan, misalnya surat dari sekolah atau fasilitas kesehatan, jika ada"
         ]
     },
     {
         nama: "Surat Keterangan Domisili",
-        desc: "Untuk bukti tempat tinggal warga di wilayah Desa Jatimulyo.",
+        desc: "Sebagai bukti bahwa warga bertempat tinggal di wilayah Desa Jatimulyo.",
         berkas: [
             "Fotokopi KTP pemohon",
             "Fotokopi Kartu Keluarga (KK)",
             "Surat Pengantar dari RT/RW setempat",
-            "Surat pindah atau keterangan tinggal (khusus pendatang/belum berdomisili sesuai KTP)",
+            "Surat pindah atau surat keterangan tempat tinggal bagi pendatang atau warga yang alamat domisilinya belum sesuai dengan KTP",
             "Keterangan tujuan penggunaan surat"
         ]
     },
@@ -56,10 +56,10 @@ const LAYANAN = [
             "Fotokopi KTP pemohon",
             "Fotokopi Kartu Keluarga (KK)",
             "Surat Pengantar dari RT/RW setempat",
-            "Dokumen-dokumen yang penulisan namanya berbeda (misalnya ijazah, akta kelahiran, buku nikah, BPJS, rekening, dan sebagainya) berupa dokumen asli dan fotokopi",
-            "Keterangan dokumen mana yang namanya perlu disamakan"
+            "Dokumen asli dan fotokopi yang memuat perbedaan penulisan nama, seperti ijazah, akta kelahiran, buku nikah, kartu BPJS, atau buku rekening",
+            "Keterangan mengenai nama dan dokumen yang perlu disesuaikan"
         ],
-        catatan: "Bawa semua dokumen yang berbeda penulisan namanya agar petugas dapat mencocokkan."
+        catatan: "Bawa semua dokumen yang memuat perbedaan penulisan nama agar petugas dapat mencocokkan datanya."
     },
     {
         nama: "Surat Pengantar SKCK",

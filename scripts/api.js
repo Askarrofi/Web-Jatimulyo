@@ -34,7 +34,7 @@ async function callApi(payload) {
             signal: controller.signal
         });
 
-        if (!response.ok) throw new ApiError("Server mengembalikan kesalahan (" + response.status + ").");
+        if (!response.ok) throw new ApiError("Server mengalami kesalahan (" + response.status + ").");
 
         let data;
         try { data = await response.json(); }
@@ -46,7 +46,7 @@ async function callApi(payload) {
         return data;
     } catch (err) {
         if (err instanceof ApiError) throw err;
-        if (err.name === "AbortError") throw new ApiError("Koneksi terlalu lama. Periksa internet lalu coba lagi.");
+        if (err.name === "AbortError") throw new ApiError("Waktu koneksi habis. Periksa koneksi internet, lalu coba kembali.");
         if (err instanceof TypeError) throw new ApiError("Tidak dapat terhubung ke server. Periksa internet atau URL Apps Script.");
         throw err;
     } finally {

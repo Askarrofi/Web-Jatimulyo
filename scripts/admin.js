@@ -187,7 +187,7 @@ async function load(showSpinner) {
         scheduleRefresh(300000);
     } catch (err) {
         setConnState("error", "Gagal terhubung");
-        showError(err.message + " Klik tombol Kunci lalu masukkan kunci untuk mencoba lagi.");
+        showError(err.message + " Klik tombol Kunci, lalu masukkan kunci admin untuk mencoba kembali.");
     }
 }
 
