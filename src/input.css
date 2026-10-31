@@ -10,7 +10,7 @@
     .field input:not([type="hidden"]),
     .field select,
     .field textarea {
-        @apply w-full border border-slate-300 px-3.5 py-2.5 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200;
+        @apply w-full border border-slate-300 px-3.5 py-2.5 outline-none transition focus:border-accent-500 focus:ring-2 focus:ring-accent-200;
     }
 
     .field select {
@@ -18,7 +18,7 @@
     }
 
     .field > button {
-        @apply w-full border border-slate-300 bg-blue-50 px-3.5 py-2.5 text-left outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200;
+        @apply w-full border border-slate-300 bg-blue-50 px-3.5 py-2.5 text-left text-slate-800 outline-none transition focus:border-accent-500 focus:ring-2 focus:ring-accent-200;
     }
 
     .field [data-err] {
@@ -58,25 +58,38 @@
         @apply space-y-4;
     }
 
-    .err-summary {
-        @apply border border-red-300 bg-red-50 p-4;
+    .warn-overlay {
+        @apply fixed inset-0 z-[75] flex items-center justify-center p-4 bg-slate-900/70;
     }
 
-    .err-summary-title {
-        @apply font-bold text-red-800 mb-2;
+    .warn-panel {
+        @apply w-full max-w-md bg-cta-50 shadow-2xl;
     }
 
-    .err-summary-list {
-        @apply space-y-1;
+    .warn-head {
+        @apply flex items-start gap-3 px-5 py-4 bg-cta-700 text-white;
     }
 
-    .err-summary-item {
-        @apply block w-full text-left text-sm text-red-700 underline decoration-red-300 underline-offset-2 hover:decoration-red-500 transition;
+    .warn-head svg {
+        @apply w-7 h-7 shrink-0;
     }
 
-    .err-summary-item::before {
+    .warn-head h2 {
+        @apply text-lg font-bold;
+    }
+
+    .warn-list {
+        @apply space-y-2 text-sm text-slate-700;
+    }
+
+    .warn-list li {
+        @apply relative pl-5;
+    }
+
+    .warn-list li::before {
         content: "\2022  ";
         font-weight: bold;
+        color: #8F3E22;
     }
 
     .cal-overlay {
@@ -129,7 +142,7 @@
 
     .filter-field input,
     .filter-field select {
-        @apply w-full border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200;
+        @apply w-full border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-accent-500 focus:ring-2 focus:ring-accent-200;
     }
 
     .filter-field select {
@@ -137,7 +150,7 @@
     }
 
     .btn-primary {
-        @apply inline-flex items-center justify-center gap-2 bg-blue-700 hover:brightness-125 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold transition;
+        @apply inline-flex items-center justify-center gap-2 bg-cta-700 hover:brightness-110 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold transition;
     }
 
     .btn-secondary {
@@ -253,6 +266,50 @@
         @apply text-sm font-bold text-amber-900 mb-2;
     }
 
+    .info-link {
+        @apply inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 underline decoration-blue-300 underline-offset-2 hover:decoration-blue-700 transition;
+    }
+
+    .info-link svg {
+        @apply w-4 h-4 shrink-0;
+    }
+
+    .kode-list-box {
+        @apply bg-blue-50 p-4 shadow-md ring-1 ring-slate-300;
+    }
+
+    .kode-list-head {
+        @apply text-xs uppercase tracking-wide text-slate-500 font-semibold mb-3;
+    }
+
+    .kode-list-label {
+        @apply text-sm font-bold text-blue-900 mb-1.5;
+    }
+
+    .kode-list {
+        @apply space-y-2;
+    }
+
+    .kode-item {
+        @apply w-full flex items-center justify-between gap-3 border border-blue-200 bg-white px-3 py-2 text-left transition hover:bg-blue-100;
+    }
+
+    .kode-item-full {
+        @apply font-mono text-sm font-bold text-blue-900 break-all;
+    }
+
+    .site-footer {
+        @apply bg-blue-900 text-blue-100 text-sm;
+    }
+
+    .footer-grid {
+        @apply grid gap-5 py-6 sm:grid-cols-3;
+    }
+
+    .footer-title {
+        @apply font-bold text-white mb-1;
+    }
+
     .brand-mark {
         @apply shrink-0 w-11 h-11 bg-white/15 flex items-center justify-center ring-1 ring-white/30;
     }
@@ -323,7 +380,7 @@
     }
 
     .kv-list span {
-        @apply text-slate-500;
+        @apply block text-xs uppercase tracking-wide text-slate-500;
     }
 
     dt {
@@ -367,7 +424,7 @@
     }
 
     [data-cal-grid] [data-cell][data-state="sel"] {
-        @apply font-semibold bg-blue-700 text-white;
+        @apply font-semibold bg-blue-900 text-white;
     }
 
     .conn-swap {

@@ -39,12 +39,8 @@ function liveWaFeedback() {
 }
 
 $("noWa").addEventListener("input", (e) => {
-    e.target.value = e.target.value.replace(/[\s\-().]/g, "");
-    liveWaFeedback();
-});
-
-$("noWa").addEventListener("blur", () => {
-    $("noWa").value = $("noWa").value.replace(/^(\+62|62)/, "0");
+    const tail = e.target.value.replace(/\D/g, "").replace(/^(08|628|8|0)+/, "").slice(0, 12);
+    e.target.value = "08" + tail;
     liveWaFeedback();
 });
 
@@ -82,33 +78,23 @@ function collectErrors() {
     return errs;
 }
 
+let errPopupTimer = null;
+
 function showFormErrors(errs) {
-    const box = $("form-alert");
-    const list = $("form-alert-list");
-    if (!errs.length) {
-        box.classList.add("hidden");
-        list.textContent = "";
-        return;
-    }
-    $("form-alert-title").textContent = "Mohon perbaiki " + errs.length + " isian berikut";
+    const list = $("err-list");
     list.textContent = "";
-    errs.forEach((e) => {
+    errs.forEach((err) => {
         const li = document.createElement("li");
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "err-summary-item";
-        b.textContent = (FIELD_LABEL[e.field] ? FIELD_LABEL[e.field] + ". " : "") + e.msg;
-        b.addEventListener("click", () => {
-            const target = FIELD_LABEL[e.field] ? fieldTarget(e.field) : null;
-            if (!target) return;
-            target.focus();
-            target.scrollIntoView({ block: "center", behavior: "smooth" });
-        });
-        li.appendChild(b);
+        li.textContent = (FIELD_LABEL[err.field] ? FIELD_LABEL[err.field] + ". " : "") + err.msg;
         list.appendChild(li);
     });
-    box.classList.remove("hidden");
-    box.focus();
+    $("err-title").textContent = errs.length > 1
+        ? "Ada " + errs.length + " isian yang perlu diperbaiki"
+        : "Isian belum lengkap";
+    $("err-close").classList.add("hidden");
+    openModal("err-popup");
+    clearTimeout(errPopupTimer);
+    errPopupTimer = setTimeout(() => $("err-close").classList.remove("hidden"), 1000);
 }
 
 function focusFirstError() {
@@ -119,14 +105,19 @@ function focusFirstError() {
     target.scrollIntoView({ block: "center", behavior: "smooth" });
 }
 
+$("err-close").addEventListener("click", () => {
+    clearTimeout(errPopupTimer);
+    closeModalById("err-popup");
+    focusFirstError();
+});
+
 let lastRegistration = null;
 
 $("form-daftar").addEventListener("submit", async (e) => {
     e.preventDefault();
     const errs = collectErrors();
-    showFormErrors(errs);
     if (errs.length) {
-        focusFirstError();
+        showFormErrors(errs);
         return;
     }
 
@@ -153,15 +144,14 @@ $("form-daftar").addEventListener("submit", async (e) => {
         setLoading("btn-submit", "spin-submit", "label-submit", false, "Mengirim...");
         return;
     }
-    const kodeShort = String(result.trackingCode).slice(-4).toUpperCase();
-    lastRegistration = { kode: kodeShort, layanan: payload.jenisLayanan, tanggal: payload.tanggalDatang };
-    localStorage.setItem(KODE_STORAGE, kodeShort);
+    const kodeFull = String(result.trackingCode).toUpperCase();
+    lastRegistration = { kode: kodeFull, layanan: payload.jenisLayanan, tanggal: payload.tanggalDatang };
+    addKode(kodeFull);
     openSuccessModal(lastRegistration);
     $("form-daftar").reset();
     calPublic.sync();
     $("noWa").classList.remove("field-ok");
     $("checklist-box").classList.add("hidden");
-    showFormErrors([]);
     setLoading("btn-submit", "spin-submit", "label-submit", false, "Mengirim...");
 });
 
@@ -183,10 +173,11 @@ $("modal").addEventListener("click", (e) => { if (e.target === $("modal")) close
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("modal").classList.contains("hidden")) closeModal(); });
 
 $("btn-modal-cek").addEventListener("click", () => {
-    const kode = lastRegistration ? lastRegistration.kode : "";
+    const kode = lastRegistration ? lastRegistration.kode.slice(-4) : "";
     closeModal();
     showTab("status");
     $("trackingCode").value = kode;
+    liveKodeFeedback();
     $("trackingCode").focus();
 });
 

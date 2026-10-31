@@ -1,5 +1,5 @@
 const TABS = ["daftar", "status", "info"];
-const KODE_STORAGE = "jtm_last_kode";
+const KODE_STORAGE = "jtm_kode_list";
 let calPublic = null;
 
 function showTab(name) {
@@ -11,8 +11,20 @@ function showTab(name) {
         btn.setAttribute("aria-selected", active ? "true" : "false");
         btn.tabIndex = active ? 0 : -1;
     });
-    $("btn-submit").classList.toggle("hidden", name !== "daftar");
+    if (name === "status") renderKodeList();
     window.scrollTo({ top: 0 });
+}
+
+function readKodeList() {
+    return JSON.parse(localStorage.getItem(KODE_STORAGE) || "[]");
+}
+
+function saveKodeList(list) {
+    localStorage.setItem(KODE_STORAGE, JSON.stringify(list.slice(0, 12)));
+}
+
+function addKode(full) {
+    saveKodeList([full].concat(readKodeList().filter((k) => k !== full)));
 }
 
 document.querySelectorAll(".tab-btn").forEach((btn) => {
@@ -27,6 +39,14 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
         showTab(TABS[next]);
         document.querySelector(`.tab-btn[data-tab="${TABS[next]}"]`).focus();
     });
+});
+
+document.addEventListener("click", (e) => {
+    const go = e.target.closest("[data-goto]");
+    if (!go) return;
+    closeModalById("modal");
+    closeModalById("err-popup");
+    showTab(go.dataset.goto);
 });
 
 (function init() {

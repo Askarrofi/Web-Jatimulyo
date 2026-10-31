@@ -27,9 +27,55 @@ attachLiveValidation("trackingCode", checkKode);
 
 $("trackingCode").addEventListener("input", (e) => {
     e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4);
-    $("kode-hint").classList.add("hidden");
     liveKodeFeedback();
 });
+
+function paintKodeList(container, rows) {
+    container.textContent = "";
+    rows.forEach((row) => {
+        const style = getStatusStyle(row.status);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "kode-item";
+        const full = document.createElement("span");
+        full.className = "kode-item-full";
+        full.textContent = row.full;
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.dataset.status = style.key;
+        badge.textContent = style.label;
+        btn.appendChild(full);
+        btn.appendChild(badge);
+        btn.addEventListener("click", () => {
+            $("trackingCode").value = row.full.slice(-4);
+            liveKodeFeedback();
+            $("trackingCode").focus();
+        });
+        container.appendChild(btn);
+    });
+}
+
+function renderKodeList() {
+    const codes = readKodeList();
+    $("kode-list-box").classList.toggle("hidden", !codes.length);
+    if (!codes.length) return;
+    Promise.allSettled(codes.map((full) =>
+        callApi({ action: "checkStatus", trackingCode: full.slice(-4) })
+    )).then((results) => {
+        const aktif = [];
+        const selesai = [];
+        results.forEach((r, i) => {
+            if (r.status !== "fulfilled") return;
+            const row = { full: codes[i], status: r.value.statusPelayanan };
+            if (getStatusStyle(row.status).key === "selesai") selesai.push(row);
+            else aktif.push(row);
+        });
+        paintKodeList($("kode-list-aktif"), aktif);
+        paintKodeList($("kode-list-selesai"), selesai);
+        $("kode-aktif-wrap").classList.toggle("hidden", !aktif.length);
+        $("kode-selesai-wrap").classList.toggle("hidden", !selesai.length);
+    });
+}
 
 $("form-status").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -51,11 +97,11 @@ $("form-status").addEventListener("submit", async (e) => {
         setLoading("btn-status", "spin-status", "label-status", false, "Memeriksa...");
         return;
     }
-    localStorage.setItem(KODE_STORAGE, kode);
+    addKode(String(data.trackingCode).toUpperCase());
 
     const style = getStatusStyle(data.statusPelayanan);
 
-    $("res-kode").textContent = kode;
+    $("res-kode").textContent = data.trackingCode || kode;
     $("res-nama").textContent = data.nama || "-";
     $("res-layanan").textContent = data.jenisLayanan || "-";
     $("res-tanggal").textContent = formatTanggalPanjang(data.tanggalDatang);
@@ -70,10 +116,3 @@ $("form-status").addEventListener("submit", async (e) => {
     $("status-result").scrollIntoView({ block: "nearest" });
     setLoading("btn-status", "spin-status", "label-status", false, "Memeriksa...");
 });
-
-const lastKode = localStorage.getItem(KODE_STORAGE);
-if (lastKode) {
-    $("trackingCode").value = lastKode;
-    $("kode-hint").classList.remove("hidden");
-    liveKodeFeedback();
-}

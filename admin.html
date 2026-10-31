@@ -356,7 +356,7 @@
                     <div class="grid sm:grid-cols-2 gap-4">
                         <div class="field">
                             <label for="w-wa">Nomor WhatsApp <span class="text-slate-400 font-normal">(opsional)</span></label>
-                            <input id="w-wa" type="tel" inputmode="tel" maxlength="16" placeholder="Contoh: 08xxxxxxxxxx" />
+                            <input id="w-wa" type="tel" inputmode="tel" maxlength="16" placeholder="Contoh 08xxxxxxxxxx" />
                             <p class="hidden" data-err data-for="w-wa"></p>
                         </div>
                         <div class="field">
@@ -369,7 +369,7 @@
                     <div class="field">
                         <label for="w-rt">RT <span class="text-red-500">*</span></label>
                         <input id="w-rt" type="text" inputmode="numeric" maxlength="3" autocomplete="off"
-                            placeholder="Contoh: 003" />
+                            placeholder="Contoh 003" />
                         <p class="hidden" data-err data-for="w-rt"></p>
                     </div>
 
@@ -387,7 +387,7 @@
                         <label id="label-w-tanggal" for="w-tanggal">Tanggal Kedatangan <span
                                 class="text-red-500">*</span></label>
                         <button id="w-tanggal-btn" type="button" aria-labelledby="label-w-tanggal">
-                            <span class="text-slate-400">Pilih tanggal</span>
+                            <span>Pilih tanggal</span>
                         </button>
                         <input id="w-tanggal" type="hidden" value="" />
                         <p class="hidden" data-err data-for="w-tanggal"></p>
@@ -431,9 +431,9 @@
                             class="mt-1 font-mono text-3xl font-extrabold text-blue-900 tracking-wider break-all"></p>
                     </div>
                     <div class="kv-list">
-                        <p><span>Nama Lengkap:</span> <strong id="ws-nama"></strong></p>
-                        <p><span>Layanan:</span> <strong id="ws-layanan"></strong></p>
-                        <p><span>Tanggal Kedatangan:</span> <strong id="ws-tanggal"></strong></p>
+                        <p><span>Nama Lengkap</span> <strong id="ws-nama"></strong></p>
+                        <p><span>Layanan</span> <strong id="ws-layanan"></strong></p>
+                        <p><span>Tanggal Kedatangan</span> <strong id="ws-tanggal"></strong></p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-3">
                         <button id="ws-print" type="button"
@@ -476,9 +476,25 @@
         <p class="ps-note">Simpan kode ini untuk memantau status layanan melalui website ini.</p>
     </div>
 
-    <footer class="bg-blue-900 text-blue-100 text-sm">
-        <div class="max-w-7xl mx-auto px-4 py-5 text-center">
-            <p class="font-semibold">Pemerintah Desa Jatimulyo, Provinsi Lampung</p>
+    <footer class="site-footer">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="footer-grid">
+                <div>
+                    <p class="footer-title">Pemerintah Desa Jatimulyo</p>
+                    <p>Kecamatan Jati Agung</p>
+                    <p>Kabupaten Lampung Selatan</p>
+                    <p>Provinsi Lampung</p>
+                </div>
+                <div>
+                    <p class="footer-title">Alamat Balai Desa</p>
+                    <p>Isi alamat lengkap Balai Desa Jatimulyo di sini</p>
+                </div>
+                <div>
+                    <p class="footer-title">Kontak</p>
+                    <p>Isi nomor WhatsApp Balai Desa di sini</p>
+                    <p>Pelayanan Senin sampai Jumat</p>
+                </div>
+            </div>
         </div>
     </footer>
 

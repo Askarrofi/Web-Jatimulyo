@@ -40,8 +40,9 @@
                         <img src="assets/logo-desa.png" alt="Logo Desa Jatimulyo" />
                     </div>
                     <div class="leading-tight min-w-0">
-                        <p class="text-xs text-blue-100 tracking-wide uppercase">Pemerintah Desa Jatimulyo</p>
-                        <h1 class="text-base sm:text-lg font-bold">Pelayanan Administrasi</h1>
+                        <p class="text-xs text-blue-100 tracking-wide uppercase">Pemerintah Desa Jatimulyo, Kecamatan
+                            Jati Agung</p>
+                        <h1 class="text-base sm:text-lg font-bold">Pelayanan Administrasi Desa</h1>
                     </div>
                 </div>
 
@@ -53,17 +54,6 @@
                     <button type="button" role="tab" id="tab-info" aria-controls="panel-info" aria-selected="false"
                         tabindex="-1" data-tab="info" class="tab-btn">Informasi Syarat Berkas</button>
                 </nav>
-
-                <button id="btn-submit" type="submit" form="form-daftar"
-                    class="btn-primary w-full sm:w-auto sm:ml-auto px-6 py-2.5 shadow">
-                    <svg id="spin-submit" class="spin hidden w-5 h-5" viewBox="0 0 24 24" fill="none"
-                        aria-hidden="true">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                    </svg>
-                    <span id="label-submit">Daftar</span>
-                </button>
             </div>
         </div>
     </header>
@@ -79,11 +69,6 @@
 
             <form id="form-daftar" novalidate class="space-y-5">
 
-                <div id="form-alert" class="hidden err-summary" tabindex="-1" role="alert">
-                    <p id="form-alert-title" class="err-summary-title"></p>
-                    <ul id="form-alert-list" class="err-summary-list"></ul>
-                </div>
-
                 <div class="field field-card">
                     <label for="nama">Nama Lengkap <span class="text-red-500">*</span></label>
                     <input id="nama" name="nama" type="text" maxlength="100" autocomplete="name"
@@ -95,7 +80,7 @@
                     <div class="field field-card">
                         <label for="noWa">Nomor WhatsApp <span class="text-red-500">*</span></label>
                         <input id="noWa" name="noWa" type="tel" inputmode="tel" maxlength="16" autocomplete="tel"
-                            placeholder="Contoh: 08xxxxxxxxxx" />
+                            placeholder="Contoh 08xxxxxxxxxx" />
                         <p class="hidden" data-err data-for="noWa"></p>
                     </div>
                     <div class="field field-card">
@@ -108,7 +93,7 @@
                 <div class="field field-card">
                     <label for="rt">RT <span class="text-red-500">*</span></label>
                     <input id="rt" name="rt" type="text" inputmode="numeric" maxlength="3" autocomplete="off"
-                        placeholder="Contoh: 003" />
+                        placeholder="Contoh 003" />
                     <p class="hidden" data-err data-for="rt"></p>
                 </div>
 
@@ -129,11 +114,20 @@
                     </div>
                 </div>
 
+                <button type="button" data-goto="info" class="info-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Lupa syarat berkas? Buka Informasi Syarat Berkas
+                </button>
+
                 <div class="field field-card">
                     <label id="label-tanggal" for="tanggalDatang">Tanggal Kedatangan <span
                             class="text-red-500">*</span></label>
                     <button id="tanggalDatang-btn" type="button" aria-labelledby="label-tanggal">
-                        <span class="text-slate-400">Pilih tanggal</span>
+                        <span>Pilih tanggal</span>
                     </button>
                     <input id="tanggalDatang" name="tanggalDatang" type="hidden" value="" />
                     <div id="date-chips" class="mt-2 flex flex-wrap gap-2">
@@ -143,6 +137,14 @@
                     </div>
                     <p class="hidden" data-err data-for="tanggalDatang"></p>
                 </div>
+
+                <button id="btn-submit" type="submit" class="btn-primary w-full px-6 py-3 shadow">
+                    <svg id="spin-submit" class="spin hidden w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                    <span id="label-submit">Daftar Sekarang</span>
+                </button>
             </form>
         </section>
 
@@ -157,7 +159,7 @@
                     <label for="trackingCode">Kode Tracking</label>
                     <div class="flex flex-col sm:flex-row gap-3">
                         <input id="trackingCode" type="text" maxlength="4" autocomplete="off"
-                            autocapitalize="characters" spellcheck="false" placeholder="Contoh: K7M2"
+                            autocapitalize="characters" spellcheck="false" placeholder="Contoh K7M2"
                             class="flex-1 tracking-wide" />
                         <button id="btn-status" type="submit" class="btn-primary px-6 py-2.5 shadow">
                             <svg id="spin-status" class="spin hidden w-5 h-5" viewBox="0 0 24 24" fill="none"
@@ -171,11 +173,21 @@
                         </button>
                     </div>
                     <p class="hidden mt-2" data-err data-for="trackingCode"></p>
-                    <p id="kode-hint" class="hidden mt-2 text-xs text-slate-500">Kode terakhir Anda diisi secara
-                        otomatis.</p>
                     <p id="status-error" class="hidden alert-error mt-3" role="alert"></p>
                 </div>
             </form>
+
+            <div id="kode-list-box" class="hidden kode-list-box mt-6">
+                <p class="kode-list-head">Kode dari perangkat ini</p>
+                <div id="kode-aktif-wrap">
+                    <p class="kode-list-label">Belum selesai</p>
+                    <div id="kode-list-aktif" class="kode-list"></div>
+                </div>
+                <div id="kode-selesai-wrap" class="hidden mt-4">
+                    <p class="kode-list-label">Selesai</p>
+                    <div id="kode-list-selesai" class="kode-list"></div>
+                </div>
+            </div>
 
             <div id="status-result"
                 class="hidden reveal mt-6 bg-blue-50 shadow-sm ring-1 ring-slate-200 overflow-hidden"
@@ -237,9 +249,25 @@
         </section>
     </main>
 
-    <footer class="bg-blue-900 text-blue-100 text-sm">
-        <div class="max-w-[896px] mx-auto px-4 py-5 text-center">
-            <p class="font-semibold">Pemerintah Desa Jatimulyo, Provinsi Lampung</p>
+    <footer class="site-footer">
+        <div class="max-w-[896px] mx-auto px-4">
+            <div class="footer-grid">
+                <div>
+                    <p class="footer-title">Pemerintah Desa Jatimulyo</p>
+                    <p>Kecamatan Jati Agung</p>
+                    <p>Kabupaten Lampung Selatan</p>
+                    <p>Provinsi Lampung</p>
+                </div>
+                <div>
+                    <p class="footer-title">Alamat Balai Desa</p>
+                    <p>Isi alamat lengkap Balai Desa Jatimulyo di sini</p>
+                </div>
+                <div>
+                    <p class="footer-title">Kontak</p>
+                    <p>Isi nomor WhatsApp Balai Desa di sini</p>
+                    <p>Pelayanan Senin sampai Jumat</p>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -273,8 +301,8 @@
                 </div>
 
                 <div class="kv-list">
-                    <p><span>Layanan:</span> <strong id="modal-layanan"></strong></p>
-                    <p><span>Tanggal Kedatangan:</span> <strong id="modal-tanggal"></strong></p>
+                    <p><span>Layanan</span> <strong id="modal-layanan"></strong></p>
+                    <p><span>Tanggal Kedatangan</span> <strong id="modal-tanggal"></strong></p>
                 </div>
 
                 <div>
@@ -283,7 +311,8 @@
                         class="space-y-2 text-sm text-slate-700 list-decimal list-inside marker:font-bold marker:text-blue-700">
                         <li><strong>Catat atau salin</strong> kode tracking di atas (bisa lewat screenshot).</li>
                         <li><strong>Siapkan berkas fisik</strong> (asli + fotokopi) sesuai daftar syarat pada menu
-                            Informasi Syarat Berkas.</li>
+                            <button type="button" data-goto="info" class="info-link">Informasi Syarat
+                                Berkas</button>.</li>
                         <li><strong>Datang ke Balai Desa</strong> pada tanggal yang dipilih dan sebutkan kode tracking
                             kepada petugas.</li>
                         <li><strong>Pantau status</strong> kapan saja melalui menu Cek Status.</li>
@@ -295,6 +324,26 @@
                 <button id="btn-modal-cek" type="button" class="btn-primary flex-1 px-4 py-2.5">Cek
                     Status Sekarang</button>
                 <button id="btn-modal-tutup" type="button" class="btn-secondary flex-1 px-4 py-2.5">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="err-popup" class="hidden warn-overlay" role="alertdialog" aria-modal="true" aria-labelledby="err-title">
+        <div class="warn-panel modal-anim">
+            <div class="warn-head">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                </svg>
+                <h2 id="err-title">Isian belum lengkap</h2>
+            </div>
+            <div class="px-5 py-4">
+                <ul id="err-list" class="warn-list"></ul>
+            </div>
+            <div class="px-5 pb-5">
+                <button id="err-close" type="button" class="hidden btn-primary w-full px-4 py-2.5">Tutup dan Perbaiki
+                    Isian</button>
             </div>
         </div>
     </div>
