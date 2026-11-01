@@ -6,10 +6,8 @@ $("btn-lock").addEventListener("click", () => {
     $("cards").textContent = "";
     renderStats();
     setConnState("idle", "Belum terhubung");
-    $("modal-key").classList.remove("hidden");
-    $("modal-key").classList.add("flex");
     $("key-input").value = "";
-    $("key-input").focus();
+    openModal("modal-key");
 });
 
 $("key-input").addEventListener("input", () => {
@@ -18,8 +16,7 @@ $("key-input").addEventListener("input", () => {
 
 function applyKey(k) {
     setKey(k);
-    $("modal-key").classList.add("hidden");
-    $("modal-key").classList.remove("flex");
+    closeModalById("modal-key");
     load(true);
 }
 
@@ -33,9 +30,7 @@ $("modal-key").addEventListener("click", (e) => { if (e.target === $("modal-key"
 
 async function load(showSpinner) {
     if (!getKey()) {
-        $("modal-key").classList.remove("hidden");
-        $("modal-key").classList.add("flex");
-        $("key-input").focus();
+        openModal("modal-key");
         return;
     }
 
