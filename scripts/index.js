@@ -45,7 +45,6 @@ document.addEventListener("click", (e) => {
     const go = e.target.closest("[data-goto]");
     if (!go) return;
     closeModalById("modal");
-    closeModalById("err-popup");
     showTab(go.dataset.goto);
 });
 

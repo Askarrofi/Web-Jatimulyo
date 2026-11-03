@@ -20,13 +20,13 @@ function liveKodeFeedback() {
 function checkKode(v) {
     const s = v.trim().toUpperCase();
     if (!s) return "Masukkan Kode Tracking terlebih dahulu.";
-    return KODE_REGEX.test(s) ? "" : "Kode terdiri dari 4 huruf atau angka, contoh K7M2.";
+    return KODE_REGEX.test(s) ? "" : "Masukkan Kode Tracking lengkap.";
 }
 
 attachLiveValidation("trackingCode", checkKode);
 
 $("trackingCode").addEventListener("input", (e) => {
-    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4);
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 29);
     liveKodeFeedback();
 });
 
@@ -47,7 +47,7 @@ function paintKodeList(container, rows) {
         btn.appendChild(full);
         btn.appendChild(badge);
         btn.addEventListener("click", () => {
-            $("trackingCode").value = row.full.slice(-4);
+            $("trackingCode").value = row.full;
             liveKodeFeedback();
             $("trackingCode").focus();
         });
@@ -60,7 +60,7 @@ function renderKodeList() {
     $("kode-list-box").classList.toggle("hidden", !codes.length);
     if (!codes.length) return;
     Promise.allSettled(codes.map((full) =>
-        callApi({ action: "checkStatus", trackingCode: full.slice(-4) })
+        callApi({ action: "checkStatus", trackingCode: full })
     )).then((results) => {
         const aktif = [];
         const selesai = [];
@@ -102,10 +102,8 @@ $("form-status").addEventListener("submit", async (e) => {
     const style = getStatusStyle(data.statusPelayanan);
 
     $("res-kode").textContent = data.trackingCode || kode;
-    $("res-nama").textContent = data.nama || "-";
     $("res-layanan").textContent = data.jenisLayanan || "-";
     $("res-tanggal").textContent = formatTanggalPanjang(data.tanggalDatang);
-    $("res-catatan").textContent = data.catatan && data.catatan.trim() ? data.catatan : "Belum ada catatan dari Operator.";
 
     const badge = $("res-badge");
     badge.dataset.status = style.key;

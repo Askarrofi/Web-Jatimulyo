@@ -1,50 +1,89 @@
-let modalTrigger = null;
+const modalTriggers = new Map();
 
-function modalFocusable(el) {
-    return [...el.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), not([tabindex="-1"])')];
+function focusableElements(modal) {
+    return Array.from(
+        modal.querySelectorAll(
+            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+    );
 }
 
 function openModal(id) {
-    const el = $(id);
-    modalTrigger = document.activeElement;
-    el.classList.remove("hidden");
-    el.classList.add("flex");
+    const modal = $(id);
+
+    modalTriggers.set(id, document.activeElement);
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
     document.body.classList.add("overflow-hidden");
-    modalFocusable(el)[0].focus();
+
+    const focusable = focusableElements(modal);
+
+    if (focusable.length) {
+        focusable[0].focus();
+    }
+
+    const handleKeydown = (event) => {
+        if (event.key === "Escape") {
+            closeModalById(id);
+            return;
+        }
+
+        if (event.key !== "Tab") return;
+
+        const elements = focusableElements(modal);
+
+        if (!elements.length) {
+            event.preventDefault();
+            return;
+        }
+
+        const first = elements[0];
+        const last = elements[elements.length - 1];
+
+        if (
+            event.shiftKey
+            && document.activeElement === first
+        ) {
+            event.preventDefault();
+            last.focus();
+        }
+
+        if (
+            !event.shiftKey
+            && document.activeElement === last
+        ) {
+            event.preventDefault();
+            first.focus();
+        }
+    };
+
+    modal._handleKeydown = handleKeydown;
+    modal.addEventListener("keydown", handleKeydown);
 }
 
 function closeModalById(id) {
-    const el = $(id);
-    el.classList.add("hidden");
-    el.classList.remove("flex");
-    document.body.classList.remove("overflow-hidden");
-    modalTrigger.focus();
-    modalTrigger = null;
+    const modal = $(id);
+
+    if (modal.classList.contains("hidden")) return;
+
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    if (!document.querySelector(".modal-backdrop.flex, .warn-overlay.flex")) document.body.classList.remove("overflow-hidden");
+
+    if (modal._handleKeydown) {
+        modal.removeEventListener(
+            "keydown",
+            modal._handleKeydown
+        );
+
+        delete modal._handleKeydown;
+    }
+
+    const trigger = modalTriggers.get(id);
+
+    modalTriggers.delete(id);
+
+    if (trigger && trigger.isConnected) {
+        trigger.focus();
+    }
 }
-
-document.addEventListener("keydown", (event) => {
-    const el = document.querySelector(".modal-backdrop.flex");
-
-    if (!el) return;
-
-    if (event.key === "Escape") {
-        closeModalById(el.id);
-        return;
-    }
-
-    if (event.key !== "Tab") return;
-
-    const items = modalFocusable(el);
-    const first = items[0];
-    const last = items[items.length - 1];
-
-    if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-    }
-
-    if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-    }
-});

@@ -11,6 +11,8 @@ function setLoading(btnId, spinId, labelId, loading, textLoading) {
     button.setAttribute("aria-disabled", String(loading));
     button.classList.toggle("is-loading", loading);
     $(spinId).classList.toggle("hidden", !loading);
+    const idleIcon = button.querySelector(".action-icon");
+    if (idleIcon) idleIcon.classList.toggle("hidden", loading);
     label.setAttribute("role", "status");
     label.setAttribute("aria-live", "polite");
     swapLabel(label, textLoading, loading);

@@ -15,7 +15,7 @@ let current = null;
 
 function openManage(r) {
     current = r;
-    $("m-kode").textContent = "Kode Tracking: " + String(r.trackingCode || "").slice(-4).toUpperCase();
+    $("m-kode").textContent = "Kode Tracking: " + String(r.trackingCode || "").toUpperCase();
     $("m-nama").textContent = r.nama || "-";
     $("m-wa").textContent = formatPhoneId(r.noWa);
     const phone = String(r.noWa || "").replace(/\D/g, "");

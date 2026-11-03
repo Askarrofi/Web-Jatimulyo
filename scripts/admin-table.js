@@ -8,14 +8,15 @@ function formatPhoneId(value) {
     return digits;
 }
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 12;
 const SORTS = {
     "newest": (a, b) => String(b.timestamp).localeCompare(String(a.timestamp)),
     "date-asc": (a, b) => String(a.tanggalDatang).localeCompare(String(b.tanggalDatang)) || String(a.nama).localeCompare(String(b.nama)),
-    "date-desc": (a, b) => String(b.tanggalDatang).localeCompare(String(a.tanggalDatang)) || String(b.nama).localeCompare(String(a.nama))
+    "date-desc": (a, b) => String(b.tanggalDatang).localeCompare(String(a.tanggalDatang)) || String(a.nama).localeCompare(String(b.nama), "id-ID")
 };
 
 let view = [];
+let toastTimer = null;
 let page = 1;
 
 function formatDateTimeId(value) {
@@ -43,7 +44,8 @@ function toast(message) {
     el.textContent = message;
     el.classList.remove("hidden");
     el.classList.add("reveal");
-    setTimeout(() => {
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
         el.classList.add("hidden");
         el.classList.remove("reveal");
     }, 2200);
@@ -63,18 +65,15 @@ function renderStats() {
     const key = (s) => String(s || "").trim().toLowerCase();
     $("stat-today").textContent = rows.filter((r) => r.tanggalDatang === today && key(r.statusPelayanan) !== "selesai").length;
     $("stat-total").textContent = rows.length;
-    $("stat-proses").textContent = rows.filter((r) => key(r.statusPelayanan) !== "selesai").length;
+    $("stat-proses").textContent = rows.filter((r) => key(r.statusPelayanan) === "diproses").length;
     $("stat-selesai").textContent = rows.filter((r) => key(r.statusPelayanan) === "selesai").length;
 }
 
 function matches(r, q, status, layanan, dusun, jalur, dateMode) {
-    if (status) {
-        if (status === "proses") {
-            if (String(r.statusPelayanan || "").trim().toLowerCase() === "selesai") return false;
-        } else if (String(r.statusPelayanan || "").trim().toLowerCase() !== status.toLowerCase()) {
-            return false;
-        }
-    }
+    if (
+        status
+        && String(r.statusPelayanan || "").trim().toLowerCase() !== status.toLowerCase()
+    ) return false;
     if (layanan && String(r.jenisLayanan || "") !== layanan) return false;
     if (dusun && String(r.dusun || "") !== dusun) return false;
     if (jalur && String(r.jalur || "").trim().toLowerCase() !== jalur) return false;
@@ -90,11 +89,33 @@ function matches(r, q, status, layanan, dusun, jalur, dateMode) {
         end.setDate(end.getDate() + 6);
         if (r.tanggalDatang < start || r.tanggalDatang > ymdFrom(end)) return false;
     }
-    if (dateMode === "lewat" && !(r.tanggalDatang < todayYmd())) return false;
+    if (
+        dateMode === "lewat"
+        && !(
+            r.tanggalDatang < todayYmd()
+            && String(r.statusPelayanan || "").trim().toLowerCase() !== "selesai"
+        )
+    ) return false;
     if (q) {
         const needle = q.toLowerCase();
-        const hay = [r.nama, r.trackingCode, r.noWa, r.jenisLayanan, r.dusun, r.rt, r.catatan].join(" ").toLowerCase();
-        if (!hay.includes(needle)) return false;
+        const phoneNeedle = q.replace(/\D/g, "").replace(/^62/, "0");
+        const phone = formatPhoneId(r.noWa).replace(/\D/g, "");
+        const hay = [
+            r.nama,
+            r.trackingCode,
+            r.jenisLayanan,
+            r.dusun,
+            r.rt,
+            r.catatan
+        ].join(" ").toLowerCase();
+
+        if (
+            !hay.includes(needle)
+            && (
+                !phoneNeedle
+                || !phone.includes(phoneNeedle)
+            )
+        ) return false;
     }
     return true;
 }
@@ -125,7 +146,7 @@ function renderTable() {
         card.querySelector('[data-f="nama"]').textContent = row.nama || "-";
         card.querySelector('[data-f="layanan"]').textContent = row.jenisLayanan || "-";
         card.querySelector('[data-f="tanggal"]').textContent = formatTanggalDmy(row.tanggalDatang);
-        card.querySelector('[data-f="kode"]').textContent = String(row.trackingCode || "").slice(-4).toUpperCase();
+        card.querySelector('[data-f="kode"]').textContent = String(row.trackingCode || "").toUpperCase();
         card.querySelector('[data-f="wa"]').textContent = formatPhoneId(row.noWa);
         card.querySelector('[data-f="timestamp"]').textContent = "Didaftarkan " + formatDateTimeId(row.timestamp);
         const jalur = card.querySelector('[data-f="jalur"]');
@@ -141,12 +162,40 @@ function renderTable() {
         card.querySelector('[data-f="manage"]').addEventListener("click", () => openManage(row));
         cards.appendChild(card);
     });
-
-    const empty = view.length === 0;
-    $("cards-empty").classList.toggle("hidden", !empty);
-    $("cards-empty-text").textContent = rows.length === 0 ? "Belum ada pendaftaran." : "Tidak ada data yang cocok dengan filter.";
+    const empty = view.length === 0;    $("cards-empty").classList.toggle("hidden", !empty);
+    $("cards-empty-text").textContent = rows.length === 0
+        ? "Belum ada pendaftaran."
+        : "Tidak ada data yang cocok dengan filter.";
+    $("cards-empty-reset").classList.toggle(
+        "hidden",
+        rows.length === 0
+    );
     $("pager-info").textContent = empty ? "" : "Kartu " + (start + 1) + "-" + Math.min(start + PAGE_SIZE, view.length) + " dari " + view.length;
-    $("filter-info").textContent = rows.length === 0 ? "Belum ada data." : "Menampilkan " + view.length + " dari " + rows.length + " pendaftar";
+    const activeFilters = [
+        $("f-search").value.trim(),
+        $("f-status").value,
+        $("f-layanan").value,
+        $("f-dusun").value,
+        $("f-jalur").value,
+        $("f-date").value === "all"
+            ? ""
+            : $("f-date").value
+    ].filter(Boolean).length;
+
+    $("filter-info").textContent = rows.length === 0
+        ? "Belum ada data."
+        : "Menampilkan "
+            + view.length
+            + " dari "
+            + rows.length
+            + " pendaftar. "
+            + activeFilters
+            + " filter aktif.";
+
+    $("f-reset").disabled =
+        activeFilters === 0
+        && $("f-sort").value === "newest";
+
     $("pg-prev").disabled = page <= 1;
     $("pg-next").disabled = page >= Math.ceil(view.length / PAGE_SIZE);
 }

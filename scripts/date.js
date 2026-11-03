@@ -50,7 +50,12 @@ function msgTanggalError(value) {
 function parseYmd(ymd) {
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(ymd || ""));
     if (!m) return null;
-    return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    const year = Number(m[1]);
+    const month = Number(m[2]);
+    const day = Number(m[3]);
+    const date = new Date(year, month - 1, day);
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+    return date;
 }
 
 function todayYmd() {

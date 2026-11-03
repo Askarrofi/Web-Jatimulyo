@@ -86,8 +86,6 @@ function collectErrors() {
     return errs;
 }
 
-let errPopupTimer = null;
-
 function showFormErrors(errs) {
     const list = $("err-list");
     list.textContent = "";
@@ -99,10 +97,8 @@ function showFormErrors(errs) {
     $("err-title").textContent = errs.length > 1
         ? "Ada " + errs.length + " isian yang perlu diperbaiki"
         : "Isian belum lengkap";
-    $("err-close").classList.add("hidden");
+    $("err-close").classList.remove("hidden");
     openModal("err-popup");
-    clearTimeout(errPopupTimer);
-    errPopupTimer = setTimeout(() => $("err-close").classList.remove("hidden"), 1000);
 }
 
 function focusFirstError() {
@@ -114,7 +110,6 @@ function focusFirstError() {
 }
 
 $("err-close").addEventListener("click", () => {
-    clearTimeout(errPopupTimer);
     closeModalById("err-popup");
     focusFirstError();
 });
@@ -178,10 +173,9 @@ function closeModal() {
 
 $("btn-modal-tutup").addEventListener("click", closeModal);
 $("modal").addEventListener("click", (e) => { if (e.target === $("modal")) closeModal(); });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("modal").classList.contains("hidden")) closeModal(); });
 
 $("btn-modal-cek").addEventListener("click", () => {
-    const kode = lastRegistration ? lastRegistration.kode.slice(-4) : "";
+    const kode = lastRegistration ? lastRegistration.kode : "";
     closeModal();
     showTab("status");
     $("trackingCode").value = kode;

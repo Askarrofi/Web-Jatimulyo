@@ -6,10 +6,8 @@ $("btn-lock").addEventListener("click", () => {
     $("cards").textContent = "";
     renderStats();
     setConnState("idle", "Belum terhubung");
-    $("modal-key").classList.remove("hidden");
-    $("modal-key").classList.add("flex");
     $("key-input").value = "";
-    $("key-input").focus();
+    openModal("modal-key");
 });
 
 $("key-input").addEventListener("input", () => {
@@ -18,8 +16,7 @@ $("key-input").addEventListener("input", () => {
 
 function applyKey(k) {
     setKey(k);
-    $("modal-key").classList.add("hidden");
-    $("modal-key").classList.remove("flex");
+    closeModalById("modal-key");
     load(true);
 }
 
@@ -28,14 +25,11 @@ $("form-key").addEventListener("submit", (e) => {
     applyKey($("key-input").value.trim());
 });
 
-$("modal-key").addEventListener("click", (e) => { if (e.target === $("modal-key")) applyKey($("key-input").value.trim()); });
 
 
 async function load(showSpinner) {
     if (!getKey()) {
-        $("modal-key").classList.remove("hidden");
-        $("modal-key").classList.add("flex");
-        $("key-input").focus();
+        openModal("modal-key");
         return;
     }
 
@@ -54,7 +48,11 @@ async function load(showSpinner) {
         setConnState("ok", "Online");
     } catch (err) {
         setConnState("error", "Gagal terhubung");
-        showError(err.message + " Klik tombol Kunci, lalu masukkan Kunci Operator untuk mencoba kembali.");
+        showError(
+            err.message === "Kunci Operator tidak valid"
+                ? "Kunci Operator tidak valid. Tekan Kunci lalu masukkan kunci yang tersimpan pada ADMIN_KEY."
+                : err.message
+        )
     }
 }
 
@@ -65,7 +63,7 @@ async function load(showSpinner) {
     });
 });
 
-$("f-reset").addEventListener("click", () => {
+function resetFilters() {
     $("f-search").value = "";
     $("f-status").value = "";
     $("f-layanan").value = "";
@@ -75,7 +73,17 @@ $("f-reset").addEventListener("click", () => {
     $("f-sort").value = "newest";
     page = 1;
     applyFilters();
-});
+}
+
+$("f-reset").addEventListener(
+    "click",
+    resetFilters
+);
+
+$("cards-empty-reset").addEventListener(
+    "click",
+    resetFilters
+);
 
 $("pg-prev").addEventListener("click", () => {
     if (page > 1) {

@@ -1,7 +1,7 @@
 const HARI_TANPA_PELAYANAN = [0, 6];
 const WA_REGEX = /^(\+62|62|0)8[1-9][0-9]{6,11}$/;
 const RT_REGEX = /^\d{1,3}$/;
-const KODE_REGEX = /^[A-Z0-9]{4}$/;
+const KODE_REGEX = /^JTM-[0-9]{8}-[A-Z0-9]{16}$/;
 const BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 const BULAN_PENDEK = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 const HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];

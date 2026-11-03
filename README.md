@@ -31,7 +31,7 @@ Jalankan `./build-css.sh` dan jangan mengubah `styles/styles.css` secara langsun
 
 ## Deployment
 
-Salin hanya `index.html`, `admin.html`, `scripts/`, dan `styles/styles.css` ke server produksi.
+Salin hanya `index.html`, `admin.html`, `scripts/`, `styles/styles.css`, dan `assets/` ke server produksi.
 
 ## Pengujian manual
 

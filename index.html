@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self'; base-uri 'self'; object-src 'none'" />
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self'; base-uri 'self'; object-src 'none'" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pelayanan Administrasi Desa Jatimulyo</title>
@@ -127,6 +127,11 @@
                     <label id="label-tanggal" for="tanggalDatang">Tanggal Kedatangan <span
                             class="text-red-500">*</span></label>
                     <button id="tanggalDatang-btn" type="button" aria-labelledby="label-tanggal">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="action-icon" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v15H3V6a2 2 0 012-2z" />
+                        </svg>
                         <span>Pilih tanggal lain</span>
                     </button>
                     <input id="tanggalDatang" name="tanggalDatang" type="hidden" value="" />
@@ -160,10 +165,15 @@
                 <div class="field-inner">
                     <label for="trackingCode">Kode Tracking</label>
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <input id="trackingCode" type="text" maxlength="4" autocomplete="off"
-                            autocapitalize="characters" spellcheck="false" placeholder="Contoh K7M2"
+                        <input id="trackingCode" type="text" maxlength="29" autocomplete="off"
+                            autocapitalize="characters" spellcheck="false" placeholder="JTM-20261101-XXXXXXXXXXXXXXXX"
                             class="flex-1 tracking-wide" />
                         <button id="btn-status" type="submit" class="btn-primary px-6 py-2.5 shadow">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="action-icon" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 21l-4.35-4.35M19 11a8 8 0 11-16 0 8 8 0 0116 0z" />
+                            </svg>
                             <svg id="spin-status" class="spin hidden w-5 h-5" viewBox="0 0 24 24" fill="none"
                                 aria-hidden="true">
                                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -203,11 +213,7 @@
                 </div>
 
                 <dl class="detail-list px-5 sm:px-7 py-5 grid sm:grid-cols-2 gap-x-6 gap-y-4">
-                    <div>
-                        <dt>Nama Lengkap</dt>
-                        <dd id="res-nama"></dd>
-                    </div>
-                    <div>
+                                        <div>
                         <dt>Jenis Layanan</dt>
                         <dd id="res-layanan"></dd>
                     </div>
@@ -215,11 +221,7 @@
                         <dt>Tanggal Kedatangan</dt>
                         <dd id="res-tanggal"></dd>
                     </div>
-                    <div class="sm:col-span-2">
-                        <dt>Catatan Operator</dt>
-                        <dd id="res-catatan" class="font-normal text-slate-700"></dd>
-                    </div>
-                </dl>
+                                    </dl>
 
                 <div class="px-5 sm:px-7 pb-6">
                     <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-3">Progres</p>
@@ -320,9 +322,21 @@
             </div>
 
             <div class="px-6 pb-6 flex flex-col sm:flex-row gap-3">
-                <button id="btn-modal-cek" type="button" class="btn-primary flex-1 px-4 py-2.5">Cek
-                    Status Sekarang</button>
-                <button id="btn-modal-tutup" type="button" class="btn-secondary flex-1 px-4 py-2.5">Tutup</button>
+                <button id="btn-modal-cek" type="button" class="btn-primary flex-1 px-4 py-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="action-icon" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 21l-4.35-4.35M19 11a8 8 0 11-16 0 8 8 0 0116 0z" />
+                    </svg>
+                    Cek Status Sekarang
+                </button>
+                <button id="btn-modal-tutup" type="button" class="btn-secondary flex-1 px-4 py-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="action-icon" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Tutup
+                </button>
             </div>
         </div>
     </div>
@@ -341,8 +355,13 @@
                 <ul id="err-list" class="warn-list"></ul>
             </div>
             <div class="px-5 pb-5">
-                <button id="err-close" type="button" class="hidden btn-primary w-full px-4 py-2.5">Tutup dan Perbaiki
-                    Isian</button>
+                <button id="err-close" type="button" class="hidden btn-primary w-full px-4 py-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="action-icon" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Tutup dan Perbaiki Isian
+                </button>
             </div>
         </div>
     </div>

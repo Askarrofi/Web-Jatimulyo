@@ -1,1 +1,1 @@
-const GOOGLE_SCRIPT_URL = "https://script.google.com/a/macros/student.itera.ac.id/s/AKfycbyhpnJGXnmT6RnfgghNaY310fDS5lfxAIZ-YnsIkPpph2e_m_9itLQ4IAYPk03B6yceAA/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZKPdyZrIwfBCEx343BbQEwIczWSuiAxop9Ag3tWMg4Bj_VXUMFCCky-bnINYm_RjV2Q/exec";

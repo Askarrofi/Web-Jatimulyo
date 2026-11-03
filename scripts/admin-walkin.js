@@ -86,7 +86,7 @@ $("form-walkin").addEventListener("submit", async (e) => {
         return;
     }
 
-    const kodeShort = String(result.trackingCode).slice(-4).toUpperCase();
+    const kodeShort = String(result.trackingCode).toUpperCase();
     $("ws-kode").textContent = kodeShort;
     $("ws-nama").textContent = payload.nama;
     $("ws-layanan").textContent = payload.jenisLayanan;
