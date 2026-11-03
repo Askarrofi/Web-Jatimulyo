@@ -44,7 +44,8 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
 document.addEventListener("click", (e) => {
     const go = e.target.closest("[data-goto]");
     if (!go) return;
-    closeModalById("modal");
+    const open = document.querySelector(".modal-backdrop.flex, .warn-overlay.flex");
+    if (open) closeModalById(open.id);
     showTab(go.dataset.goto);
 });
 
