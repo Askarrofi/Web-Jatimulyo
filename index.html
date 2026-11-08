@@ -16,11 +16,11 @@
 
     <div id="backdrop" aria-hidden="true"></div>
 
-    <div id="splash" class="fixed inset-0 z-[80] flex flex-col bg-brand-900 text-white">
+    <div id="splash" aria-hidden="true" class="fixed inset-0 z-[80] flex flex-col bg-brand-900 text-white">
         <div class="flex-1 flex flex-col items-center justify-center px-6 py-8 text-center">
             <div class="flex flex-wrap items-center justify-center gap-5">
-                <div class="splash-slot" aria-hidden="true">Lamsel</div>
-                <div class="splash-slot" aria-hidden="true">JM</div>
+                <div class="splash-slot" aria-hidden="true"><img src="assets/logo-kabupaten-lampung-selatan.png" alt="" width="112" height="112"></div>
+                <div class="splash-slot" aria-hidden="true"><img src="assets/logo-kepala-desa.jpeg" alt="" width="112" height="112"></div>
             </div>
             <p class="mt-6 text-xs uppercase tracking-widest text-brand-200">Portal Resmi Pemerintah Desa</p>
             <h2 id="splash-title" class="mt-1 text-2xl font-bold">Pelayanan Administrasi Desa Jatimulyo</h2>
@@ -31,33 +31,63 @@
         </div>
     </div>
 
-    <header class="bg-brand-900 text-white shadow-lg sticky top-0 z-30">
-        <div class="max-w-[896px] mx-auto px-4 py-4">
-            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="brand-mark">
-                        <span aria-hidden="true">JM</span>
-                    </div>
-                    <div class="leading-tight min-w-0">
-                        <p class="text-xs text-brand-100 tracking-wide uppercase">Pemerintah Desa Jatimulyo, Kecamatan
-                            Jati Agung</p>
-                        <h1 class="text-base sm:text-lg font-bold">Pelayanan Administrasi Desa</h1>
-                    </div>
-                </div>
-
-                <nav class="tab-nav -mx-4 sm:mx-0" role="tablist" aria-label="Navigasi utama">
-                    <button type="button" role="tab" id="tab-daftar" aria-controls="panel-daftar" aria-selected="true"
-                        data-tab="daftar" class="tab-btn">Pendaftaran</button>
-                    <button type="button" role="tab" id="tab-status" aria-controls="panel-status" aria-selected="false"
-                        tabindex="-1" data-tab="status" class="tab-btn">Cek Status</button>
-                    <button type="button" role="tab" id="tab-info" aria-controls="panel-info" aria-selected="false"
-                        tabindex="-1" data-tab="info" class="tab-btn">Informasi Syarat Berkas</button>
+    <header class="gov-header">
+        <a class="gov-skip-link" href="#main-content">Lewati ke konten utama</a>
+        <div class="gov-identity">
+            <div class="gov-container gov-identity-inner">
+                <a class="gov-brand" href="index.html" aria-label="Beranda Pemerintah Desa Jatimulyo">
+                    <span class="gov-logo-frame">
+                        <img src="assets/logo-kabupaten-lampung-selatan.png"
+                            alt="Lambang Kabupaten Lampung Selatan"
+                            width="56"
+                            height="56" />
+                    </span>
+                    <span class="gov-brand-text">
+                        <span class="gov-parent">Pemerintah Kabupaten Lampung Selatan</span>
+                        <strong>Pemerintah Desa Jatimulyo</strong>
+                        <span>Kecamatan Jati Agung, Provinsi Lampung</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+        <div class="gov-navigation">
+            <div class="gov-container">
+                <nav class="tab-nav gov-tab-nav" role="tablist" aria-label="Layanan utama">
+                    <button type="button"
+                        role="tab"
+                        id="tab-daftar"
+                        aria-controls="panel-daftar"
+                        aria-selected="true"
+                        data-tab="daftar"
+                        class="tab-btn">
+                        Pendaftaran
+                    </button>
+                    <button type="button"
+                        role="tab"
+                        id="tab-status"
+                        aria-controls="panel-status"
+                        aria-selected="false"
+                        tabindex="-1"
+                        data-tab="status"
+                        class="tab-btn">
+                        Cek Status
+                    </button>
+                    <button type="button"
+                        role="tab"
+                        id="tab-info"
+                        aria-controls="panel-info"
+                        aria-selected="false"
+                        tabindex="-1"
+                        data-tab="info"
+                        class="tab-btn">
+                        Informasi Syarat Berkas
+                    </button>
                 </nav>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 w-full max-w-[896px] mx-auto px-4 py-6 sm:py-8">
+    <main class="flex-1 w-full max-w-[896px] mx-auto px-4 py-6 sm:py-8" id="main-content">
 
         <section id="panel-daftar" class="tab-panel" role="tabpanel" aria-labelledby="tab-daftar">
             <div class="section-head">
@@ -246,19 +276,33 @@
         </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="max-w-[896px] mx-auto px-4">
-            <div class="footer-grid">
-                <div>
-                    <p class="footer-title">Pemerintah Desa Jatimulyo</p>
-                    <p>Kecamatan Jati Agung</p>
-                    <p>Kabupaten Lampung Selatan</p>
-                    <p>Provinsi Lampung</p>
-                </div>
-                <div>
-                    <p class="footer-title">Pelayanan</p>
-                    <p>Senin sampai Jumat</p>
-                </div>
+    <footer class="site-footer gov-footer">
+        <div class="gov-container">
+            <div class="gov-footer-main">
+                <section class="gov-footer-identity" aria-labelledby="gov-footer-title">
+                    <div class="gov-footer-brand">
+                        <span class="gov-footer-logo">
+                            <img src="assets/logo-kabupaten-lampung-selatan.png"
+                                alt=""
+                                width="52"
+                                height="52" />
+                        </span>
+                        <div>
+                            <p class="gov-footer-parent">Pemerintah Kabupaten Lampung Selatan</p>
+                            <h2 id="gov-footer-title">Pemerintah Desa Jatimulyo</h2>
+                            <p>Kecamatan Jati Agung, Provinsi Lampung</p>
+                        </div>
+                    </div>
+                    <p class="gov-footer-description">
+                        Portal pelayanan administrasi untuk pendaftaran,
+                        pemeriksaan persyaratan, dan pemantauan status pelayanan
+                        masyarakat Desa Jatimulyo.
+                    </p>
+                </section>
+            </div>
+            <div class="gov-footer-bottom">
+                <p>© <span id="footer-year">2026</span> Pemerintah Desa Jatimulyo</p>
+
             </div>
         </div>
     </footer>

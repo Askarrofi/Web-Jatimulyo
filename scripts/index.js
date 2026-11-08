@@ -16,13 +16,29 @@ function showTab(name) {
 }
 
 function readKodeList() {
-    return JSON.parse(localStorage.getItem(KODE_STORAGE) || "[]");
+    try {
+        const value = JSON.parse(
+            sessionStorage.getItem(KODE_STORAGE) || "[]"
+        );
+        return Array.isArray(value)
+            ? value
+                .filter((code) => KODE_REGEX.test(code))
+                .slice(0, 12)
+            : [];
+    } catch (error) {
+        sessionStorage.removeItem(KODE_STORAGE);
+        return [];
+    }
 }
-
 function saveKodeList(list) {
-    localStorage.setItem(KODE_STORAGE, JSON.stringify(list.slice(0, 12)));
+    const codes = list
+        .filter((code) => KODE_REGEX.test(code))
+        .slice(0, 12);
+    sessionStorage.setItem(
+        KODE_STORAGE,
+        JSON.stringify(codes)
+    );
 }
-
 function addKode(full) {
     saveKodeList([full].concat(readKodeList().filter((k) => k !== full)));
 }

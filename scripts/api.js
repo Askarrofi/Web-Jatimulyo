@@ -1,5 +1,10 @@
 const REQUEST_TIMEOUT_MS = 25000;
 const KEY_STORAGE = "jtm_admin_key";
+const ADMIN_ACTIONS = new Set([
+    "getAllData",
+    "registerOffline",
+    "updateStatus"
+]);
 
 function getKey() {
     return sessionStorage.getItem(KEY_STORAGE) || "";
@@ -21,6 +26,16 @@ async function callApi(payload) {
     if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.indexOf("GANTI_DENGAN") === 0) {
         throw new ApiError("URL Google Apps Script belum diatur. Isi konstanta GOOGLE_SCRIPT_URL.", "NO_URL");
     }
+    const request = Object.assign({}, payload);
+    if (
+        ADMIN_ACTIONS.has(request.action)
+        || (
+            request.action === "register"
+            && request.jalur === "Offline"
+        )
+    ) {
+        request.adminKey = getKey();
+    }
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -29,7 +44,7 @@ async function callApi(payload) {
         const response = await fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(Object.assign({}, payload, { adminKey: getKey() })),
+            body: JSON.stringify(request),
             signal: controller.signal
         });
 
