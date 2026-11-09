@@ -278,7 +278,7 @@
     }
 
     .berkas-box {
-        @apply border border-amber-200 bg-amber-50 p-4 shadow-sm;
+        @apply border border-amber-200 bg-amber-50 p-4 shadow-md;
     }
 
     .berkas-title {
@@ -387,7 +387,7 @@
     }
 
     .code-card {
-        @apply bg-slate-50 ring-1 ring-slate-200 p-4 text-center shadow-sm;
+        @apply bg-slate-50 ring-1 ring-slate-300 p-4 text-center shadow-md;
     }
 
     .code-card > p:first-child {
@@ -794,6 +794,7 @@ details[open] .chevron {
 .gov-tab-nav {
     width: 100%;
     display: flex;
+    justify-content: center;
     gap: 0;
     background: transparent;
     box-shadow: none;
@@ -817,7 +818,7 @@ details[open] .chevron {
 .gov-tab-nav .tab-btn[aria-selected="true"] {
     background: #ffffff;
     color: var(--gov-dark);
-    border-bottom-color: var(--gov-accent);
+    border-bottom-color: #be5733;
 }
 
 .gov-tab-nav .tab-btn:focus-visible,
@@ -837,10 +838,8 @@ details[open] .chevron {
 }
 
 .gov-footer-main {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 1fr;
-    gap: 2.5rem;
     padding-block: 3rem 2.5rem;
+    text-align: center;
 }
 
 .gov-footer section,
@@ -861,6 +860,7 @@ details[open] .chevron {
 .gov-footer-brand {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.875rem;
 }
 
@@ -886,7 +886,7 @@ details[open] .chevron {
 
 .gov-footer-description {
     max-width: 29rem;
-    margin-top: 1.25rem;
+    margin: 1.25rem auto 0;
     color: #d9e2ec;
     line-height: 1.7;
 }
@@ -895,20 +895,18 @@ details[open] .chevron {
     min-height: 4rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 1.5rem;
     border-top: 1px solid #486581;
     color: #bcccdc;
     font-size: 0.75rem;
 }
 
-@media (max-width: 900px) {
-    .gov-footer-main {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
 @media (max-width: 639px) {
+
+    .gov-navigation .gov-container {
+        width: 100%;
+    }
 
     .gov-identity-inner {
         min-height: 0;
@@ -948,13 +946,11 @@ details[open] .chevron {
     }
 
     .gov-footer-main {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 2rem;
         padding-block: 2.25rem;
     }
 
     .gov-footer-bottom {
-        align-items: flex-start;
+        align-items: center;
         flex-direction: column;
         justify-content: center;
         gap: 0.35rem;

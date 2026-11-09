@@ -70,7 +70,7 @@ function fillInfoAccordion(container) {
         const d = document.createElement("details");
         d.name = "syarat-layanan";
         if (i === 0) d.open = true;
-        d.className = "group bg-brand-50 shadow-sm ring-1 ring-slate-200 overflow-hidden";
+        d.className = "group bg-brand-50 shadow-md ring-1 ring-slate-300 overflow-hidden";
 
         const s = document.createElement("summary");
         s.className = "cursor-pointer select-none flex items-center justify-between gap-3 px-5 py-4 hover:bg-slate-50";
