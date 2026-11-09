@@ -23,7 +23,7 @@ function readKodeList() {
         return Array.isArray(value)
             ? value
                 .filter((code) => KODE_REGEX.test(code))
-                .slice(0, 12)
+                .slice(0, 5)
             : [];
     } catch (error) {
         sessionStorage.removeItem(KODE_STORAGE);
@@ -33,7 +33,7 @@ function readKodeList() {
 function saveKodeList(list) {
     const codes = list
         .filter((code) => KODE_REGEX.test(code))
-        .slice(0, 12);
+        .slice(0, 5);
     sessionStorage.setItem(
         KODE_STORAGE,
         JSON.stringify(codes)
@@ -42,6 +42,13 @@ function saveKodeList(list) {
 function addKode(full) {
     saveKodeList([full].concat(readKodeList().filter((k) => k !== full)));
 }
+function clearKodeList() {
+    sessionStorage.removeItem(KODE_STORAGE);
+    $("kode-list-aktif").textContent = "";
+    $("kode-list-selesai").textContent = "";
+    $("kode-list-box").classList.add("hidden");
+}
+$("kode-clear").addEventListener("click", clearKodeList);
 
 document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => showTab(btn.dataset.tab));
@@ -66,8 +73,6 @@ document.addEventListener("click", (e) => {
 });
 
 (function init() {
-    if (sessionStorage.getItem("jtm_splash")) $("splash").classList.add("hidden");
-    else sessionStorage.setItem("jtm_splash", "1");
     fillDusunSelect($("dusun"));
     fillLayananSelect($("jenisLayanan"));
     fillBerkasBox("checklist-box");

@@ -1,5 +1,17 @@
 module.exports = {
-    content: ["./index.html", "./admin.html", "./scripts/**/*.js"],
+    content: [
+        "./index.html",
+        "./scripts/api.js",
+        "./scripts/config.js",
+        "./scripts/data.js",
+        "./scripts/date.js",
+        "./scripts/dom.js",
+        "./scripts/forms.js",
+        "./scripts/index-form.js",
+        "./scripts/index-status.js",
+        "./scripts/index.js",
+        "./scripts/modal.js"
+    ],
     theme: {
         extend: {
             colors: {

@@ -649,7 +649,7 @@ details[open] .chevron {
 }
 
 #conn[data-state="ok"] {
-    background-color: #15803d;
+    background-color: #1d4ed8;
 }
 
 #conn[data-state="loading"] {
@@ -970,5 +970,117 @@ details[open] .chevron {
 }
 
 #splash {
-    animation: splashOut 1.8s ease forwards;
+    animation: splashOut 5s ease forwards;
+}
+.splash-slot,.gov-logo-frame,.gov-footer-logo{width:auto!important;height:auto!important;flex:0 0 auto!important;background:transparent!important;box-shadow:none!important;border:0!important}.splash-slot img{display:block!important;width:auto!important;height:auto!important;max-width:112px!important;max-height:112px!important;object-fit:contain!important;background:transparent!important}.gov-logo-frame img{display:block!important;width:auto!important;height:auto!important;max-width:56px!important;max-height:56px!important;object-fit:contain!important;background:transparent!important}.gov-footer-logo img{display:block!important;width:auto!important;height:auto!important;max-width:52px!important;max-height:52px!important;object-fit:contain!important;background:transparent!important}header>div img{width:auto!important;height:auto!important;max-width:56px!important;max-height:56px!important;object-fit:contain!important;background:transparent!important}
+#splash {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    display: grid !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    overflow: hidden !important;
+    background: #1e3a8a !important;
+    animation: splashOut 5s ease forwards !important;
+}
+#splash .jtm-splash-brand {
+    position: relative !important;
+    z-index: 2 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: .5rem !important;
+    width: min(100%, 48rem) !important;
+    margin: 0 auto !important;
+    padding: 1rem !important;
+    text-align: center !important;
+}
+#splash .jtm-splash-brand > img {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 3.75rem !important;
+    max-height: 5.25rem !important;
+    object-fit: contain !important;
+    background: transparent !important;
+}
+#splash .jtm-splash-brand-text {
+    min-width: 0 !important;
+    text-align: center !important;
+}
+#splash .jtm-splash-brand-text p {
+    margin: 0 !important;
+    font-size: .75rem !important;
+    line-height: 1.35 !important;
+    color: #dcebd9 !important;
+}
+#splash .jtm-splash-brand-text h2 {
+    margin: .15rem 0 !important;
+    font-size: clamp(1.1rem, 4vw, 1.7rem) !important;
+    line-height: 1.15 !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+}
+#splash .jtm-splash-photo {
+    position: relative !important;
+    display: flex !important;
+    min-height: 0 !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+}
+#splash .jtm-splash-photo > img {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: min(88vw, 30rem) !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    object-position: center bottom !important;
+    background: transparent !important;
+}
+#splash .jtm-splash-caption {
+    position: absolute !important;
+    inset: auto 0 0 !important;
+    z-index: 3 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: .2rem !important;
+    padding: 5rem 1rem 1.25rem !important;
+    color: #fff !important;
+    text-align: center !important;
+    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, .95)) !important;
+}
+#splash .jtm-splash-caption strong {
+    font-size: clamp(1.05rem, 4vw, 1.5rem) !important;
+    line-height: 1.2 !important;
+    letter-spacing: .08em !important;
+}
+#splash .jtm-splash-caption span {
+    font-size: .85rem !important;
+    color: #e2e8f0 !important;
+}
+@media (max-height: 560px) {
+    #splash .jtm-splash-brand {
+        gap: .35rem !important;
+        padding: .5rem 1rem !important;
+    }
+    #splash .jtm-splash-brand > img {
+        max-width: 2.75rem !important;
+        max-height: 3.5rem !important;
+    }
+    #splash .jtm-splash-brand-text p {
+        font-size: .65rem !important;
+    }
+    #splash .jtm-splash-brand-text h2 {
+        font-size: 1rem !important;
+    }
+    #splash .jtm-splash-caption {
+        padding-top: 3.5rem !important;
+        padding-bottom: .65rem !important;
+    }
 }

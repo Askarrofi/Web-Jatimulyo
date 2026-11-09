@@ -7,24 +7,55 @@ function buildCalendarEl() {
     overlay.setAttribute("role", "dialog");
     overlay.setAttribute("aria-modal", "true");
     overlay.setAttribute("aria-label", "Pilih tanggal kedatangan");
-    overlay.innerHTML =
-        '<div class="cal-backdrop" data-cal="close"></div>' +
-        '<div class="cal-panel">' +
-        '<div class="mb-2 flex items-center justify-between">' +
-        '<button type="button" data-cal="prev" aria-label="Bulan sebelumnya" class="p-2 text-brand-900 transition hover:bg-brand-100">' +
-        '<svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>' +
-        "</button>" +
-        '<p data-cal-title class="text-sm font-bold text-brand-900"></p>' +
-        '<button type="button" data-cal="next" aria-label="Bulan berikutnya" class="p-2 text-brand-900 transition hover:bg-brand-100">' +
-        '<svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>' +
-        "</button>" +
-        "</div>" +
-        '<div class="mb-1 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500">' +
-        "<span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>" +
-        "</div>" +
-        '<div data-cal-grid class="grid grid-cols-7 gap-1"></div>' +
-        "</div>";
-    const grid = overlay.querySelector("[data-cal-grid]");
+    const backdrop = document.createElement("div");
+    backdrop.className = "cal-backdrop";
+    backdrop.dataset.cal = "close";
+    const panel = document.createElement("div");
+    panel.className = "cal-panel";
+    const navigation = document.createElement("div");
+    navigation.className = "mb-2 flex items-center justify-between";
+    const createNavigationButton = (direction, label, pathData) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.cal = direction;
+        button.setAttribute("aria-label", label);
+        button.className = "p-2 text-brand-900 transition hover:bg-brand-100";
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("class", "h-4 w-4");
+        svg.setAttribute("fill", "none");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("stroke", "currentColor");
+        svg.setAttribute("stroke-width", "2");
+        svg.setAttribute("aria-hidden", "true");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        path.setAttribute("d", pathData);
+        svg.appendChild(path);
+        button.appendChild(svg);
+        return button;
+    };
+    const title = document.createElement("p");
+    title.dataset.calTitle = "";
+    title.className = "text-sm font-bold text-brand-900";
+    navigation.appendChild(createNavigationButton("prev", "Bulan sebelumnya", "M15 19l-7-7 7-7"));
+    navigation.appendChild(title);
+    navigation.appendChild(createNavigationButton("next", "Bulan berikutnya", "M9 5l7 7-7 7"));
+    const weekdays = document.createElement("div");
+    weekdays.className = "mb-1 grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500";
+    ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"].forEach((name) => {
+        const day = document.createElement("span");
+        day.textContent = name;
+        weekdays.appendChild(day);
+    });
+    const grid = document.createElement("div");
+    grid.dataset.calGrid = "";
+    grid.className = "grid grid-cols-7 gap-1";
+    panel.appendChild(navigation);
+    panel.appendChild(weekdays);
+    panel.appendChild(grid);
+    overlay.appendChild(backdrop);
+    overlay.appendChild(panel);
     for (let i = 0; i < 42; i++) {
         const c = document.createElement("button");
         c.type = "button";

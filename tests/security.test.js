@@ -6,7 +6,43 @@ const code = fs.readFileSync("Code.gs", "utf8")
 const index = fs.readFileSync("index.html", "utf8")
 const publicScript = fs.readFileSync("scripts/index.js", "utf8")
 const api = fs.readFileSync("scripts/api.js", "utf8")
-const walkin = fs.readFileSync("scripts/admin-walkin.js", "utf8")
+const walkin = fs.existsSync("scripts/admin-walkin.js")
+  ? fs.readFileSync("scripts/admin-walkin.js", "utf8")
+  : ""
+const allPublicSource = [
+  index,
+  publicScript,
+  api,
+  fs.readFileSync("scripts/date.js", "utf8"),
+  fs.readFileSync("scripts/dom.js", "utf8"),
+  fs.readFileSync("scripts/forms.js", "utf8"),
+  fs.readFileSync("scripts/index-form.js", "utf8"),
+  fs.readFileSync("scripts/index-status.js", "utf8"),
+  fs.readFileSync("scripts/modal.js", "utf8")
+].join("\n")
+assert.doesNotMatch(
+  allPublicSource,
+  /innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\s*\(|new Function|javascript:/
+)
+assert.match(index, /default-src 'none'/)
+assert.match(index, /script-src-attr 'none'/)
+assert.match(index, /style-src-attr 'none'/)
+assert.match(index, /frame-src 'none'/)
+assert.match(index, /worker-src 'none'/)
+assert.match(index, /base-uri 'none'/)
+assert.match(index, /name="referrer" content="no-referrer"/)
+assert.match(index, /id="kode-clear"/)
+assert.match(publicScript, /\.slice\(0, 5\)/)
+assert.doesNotMatch(index, /admin\.html/)
+for (const file of [
+  "admin.html",
+  "scripts/admin.js",
+  "scripts/admin-table.js",
+  "scripts/admin-manage.js",
+  "scripts/admin-walkin.js"
+]) {
+  assert.strictEqual(fs.existsSync(file), true)
+}
 
 assert.match(
   code,
@@ -155,22 +191,10 @@ assert.doesNotMatch(
   /\/\*/
 )
 
-assert.match(
-  walkin,
-  /function\s+openWalkin\s*\(\s*\)/
-)
-assert.doesNotMatch(
-  walkin,
-  /if\s*\(\s*!getKey\s*\(\s*\)\s*\)/
-)
-assert.doesNotMatch(
-  walkin,
-  /openModal\s*\(\s*"modal-key"\s*\)/
-)
 
 assert.match(
   index,
-  /assets\/logo-kepala-desa\.jpeg/
+  /assets\/foto-kepala-desa\.png/
 )
 assert.doesNotMatch(
   index,

@@ -3,7 +3,8 @@
 
 <head>
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'self'; base-uri 'self'; object-src 'none'" />
+        content="default-src 'none'; script-src 'self'; script-src-attr 'none'; style-src 'self'; style-src-attr 'none'; img-src 'self' data:; font-src 'self'; connect-src https://script.google.com https://script.googleusercontent.com; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; form-action 'self'; base-uri 'none'; upgrade-insecure-requests" />
+    <meta name="referrer" content="no-referrer" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pelayanan Administrasi Desa Jatimulyo</title>
@@ -16,18 +17,21 @@
 
     <div id="backdrop" aria-hidden="true"></div>
 
-    <div id="splash" aria-hidden="true" class="fixed inset-0 z-[80] flex flex-col bg-brand-900 text-white">
-        <div class="flex-1 flex flex-col items-center justify-center px-6 py-8 text-center">
-            <div class="flex flex-wrap items-center justify-center gap-5">
-                <div class="splash-slot" aria-hidden="true"><img src="assets/logo-kabupaten-lampung-selatan.png" alt="" width="112" height="112"></div>
-                <div class="splash-slot" aria-hidden="true"><img src="assets/logo-kepala-desa.jpeg" alt="" width="112" height="112"></div>
+    <div id="splash" aria-hidden="true">
+        <div class="jtm-splash-brand">
+            <img src="assets/logo-kabupaten-lampung-selatan.png" alt="" />
+            <div class="jtm-splash-brand-text">
+                <p>Pemerintah Kabupaten Lampung Selatan</p>
+                <h2 id="splash-title">Pemerintah Desa Jatimulyo</h2>
+                <p>Kecamatan Jati Agung, Provinsi Lampung</p>
             </div>
-            <p class="mt-6 text-xs uppercase tracking-widest text-brand-200">Portal Resmi Pemerintah Desa</p>
-            <h2 id="splash-title" class="mt-1 text-2xl font-bold">Pelayanan Administrasi Desa Jatimulyo</h2>
-            <p class="mt-2 text-sm text-brand-100">Kabupaten Lampung Selatan, Provinsi Lampung</p>
         </div>
-        <div class="px-6 pb-10 flex flex-col items-center gap-3">
-            <p class="text-sm font-semibold">Pemerintah Desa Jatimulyo</p>
+        <div class="jtm-splash-photo">
+            <img src="assets/foto-kepala-desa.png" alt="" />
+            <div class="jtm-splash-caption">
+                <strong>H. Sumardi, S.E.</strong>
+                <span>Kepala Desa Jatimulyo</span>
+            </div>
         </div>
     </div>
 
@@ -38,9 +42,7 @@
                 <a class="gov-brand" href="index.html" aria-label="Beranda Pemerintah Desa Jatimulyo">
                     <span class="gov-logo-frame">
                         <img src="assets/logo-kabupaten-lampung-selatan.png"
-                            alt="Lambang Kabupaten Lampung Selatan"
-                            width="56"
-                            height="56" />
+                            alt="Lambang Kabupaten Lampung Selatan" />
                     </span>
                     <span class="gov-brand-text">
                         <span class="gov-parent">Pemerintah Kabupaten Lampung Selatan</span>
@@ -212,7 +214,10 @@
             </form>
 
             <div id="kode-list-box" class="hidden kode-list-box mt-6">
-                <p class="kode-list-head">Kode dari perangkat ini</p>
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <p class="kode-list-head">Kode dari perangkat ini</p>
+                    <button id="kode-clear" type="button" class="btn-muted text-sm">Hapus dari perangkat</button>
+                </div>
                 <div id="kode-aktif-wrap">
                     <p class="kode-list-label">Sedang Diproses</p>
                     <div id="kode-list-aktif" class="kode-list"></div>
@@ -283,9 +288,7 @@
                     <div class="gov-footer-brand">
                         <span class="gov-footer-logo">
                             <img src="assets/logo-kabupaten-lampung-selatan.png"
-                                alt=""
-                                width="52"
-                                height="52" />
+                                alt="" />
                         </span>
                         <div>
                             <p class="gov-footer-parent">Pemerintah Kabupaten Lampung Selatan</p>
